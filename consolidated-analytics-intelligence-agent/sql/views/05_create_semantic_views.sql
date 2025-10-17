@@ -48,10 +48,10 @@ CREATE OR REPLACE SEMANTIC VIEW SV_BORROWER_LOAN_INTELLIGENCE
     borrowers.employment_status AS employment_status
       WITH SYNONYMS ('job status', 'work status', 'employment type')
       COMMENT = 'Employment status of borrower',
-    borrowers.borrower_state AS state
+    borrowers.borrower_state AS borrower_state
       WITH SYNONYMS ('state', 'borrower location', 'residence state')
       COMMENT = 'Borrower state location',
-    borrowers.borrower_city AS city
+    borrowers.borrower_city AS borrower_city
       WITH SYNONYMS ('city', 'borrower city', 'residence city')
       COMMENT = 'Borrower city location',
     loans.loan_type AS loan_type
@@ -151,10 +151,10 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_VALUATION_INTELLIGENCE
     properties.property_type AS property_type
       WITH SYNONYMS ('real estate type', 'asset class')
       COMMENT = 'Property type classification',
-    properties.property_state AS state
+    properties.property_state AS property_state
       WITH SYNONYMS ('state', 'property location', 'collateral state')
       COMMENT = 'Property state location',
-    properties.property_city AS city
+    properties.property_city AS property_city
       WITH SYNONYMS ('city', 'property location city', 'collateral city')
       COMMENT = 'Property city location',
     properties.condition_rating AS property_condition
