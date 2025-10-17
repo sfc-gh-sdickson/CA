@@ -175,8 +175,8 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_VALUATION_INTELLIGENCE
     valuations.market_conditions AS market_conditions
       WITH SYNONYMS ('market state', 'market environment')
       COMMENT = 'Market conditions at time of valuation',
-    analysts.specialization AS appraiser_specialization
-      WITH SYNONYMS ('expertise', 'specialty area')
+    analysts.specialization AS specialization
+      WITH SYNONYMS ('appraiser specialization', 'expertise', 'specialty area')
       COMMENT = 'Appraiser specialization',
     analysts.certification_level AS certification_level
       WITH SYNONYMS ('certification', 'credential level')
@@ -253,14 +253,14 @@ CREATE OR REPLACE SEMANTIC VIEW SV_DUE_DILIGENCE_INTELLIGENCE
     loans.loan_type AS loan_type
       WITH SYNONYMS ('mortgage type', 'loan product')
       COMMENT = 'Type of loan',
-    loans.risk_rating AS loan_risk_rating
-      WITH SYNONYMS ('risk level', 'risk grade')
+    loans.risk_rating AS risk_rating
+      WITH SYNONYMS ('loan risk rating', 'risk level', 'risk grade')
       COMMENT = 'Loan risk rating',
-    analysts.specialization AS analyst_specialization
-      WITH SYNONYMS ('expertise', 'specialty')
+    analysts.specialization AS specialization
+      WITH SYNONYMS ('analyst specialization', 'expertise', 'specialty')
       COMMENT = 'Analyst specialization area',
-    analysts.department AS analyst_department
-      WITH SYNONYMS ('team', 'business unit')
+    analysts.department AS department
+      WITH SYNONYMS ('analyst department', 'team', 'business unit')
       COMMENT = 'Analyst department',
     analysts.certification_level AS certification_level
       WITH SYNONYMS ('certification', 'credential')
@@ -268,8 +268,8 @@ CREATE OR REPLACE SEMANTIC VIEW SV_DUE_DILIGENCE_INTELLIGENCE
     cases.case_type AS case_type
       WITH SYNONYMS ('inquiry type', 'request type')
       COMMENT = 'Type of support case',
-    cases.priority AS case_priority
-      WITH SYNONYMS ('urgency', 'importance')
+    cases.priority AS priority
+      WITH SYNONYMS ('case priority', 'urgency', 'importance')
       COMMENT = 'Case priority: LOW, MEDIUM, HIGH, URGENT',
     cases.case_status AS case_status
       WITH SYNONYMS ('case state', 'ticket status')
