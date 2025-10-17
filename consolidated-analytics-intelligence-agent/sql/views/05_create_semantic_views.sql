@@ -54,11 +54,11 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
     borrowers.employment_status AS employment_status
       WITH SYNONYMS ('job status', 'work status', 'employment type')
       COMMENT = 'Employment status of borrower',
-    borrowers.state AS borrower_state
-      WITH SYNONYMS ('state', 'borrower location', 'residence state')
+    borrowers.state AS borrstate
+      WITH SYNONYMS ('borrower state', 'state', 'borrower location', 'residence state')
       COMMENT = 'Borrower state location',
-    borrowers.city AS borrower_city
-      WITH SYNONYMS ('city', 'borrower city', 'residence city')
+    borrowers.city AS borrcity
+      WITH SYNONYMS ('borrower city', 'city', 'residence city')
       COMMENT = 'Borrower city location',
     loans.loan_type AS loan_type
       WITH SYNONYMS ('mortgage type', 'loan product', 'financing type')
