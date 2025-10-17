@@ -37,8 +37,8 @@ SELECT
     b.annual_income,
     b.borrower_type,
     b.borrower_status,
-    b.state AS borrower_state,
-    b.city AS borrower_city,
+    b.borrower_state,
+    b.borrower_city,
     -- Property information
     p.property_id,
     p.property_address,
@@ -48,8 +48,8 @@ SELECT
     p.year_built,
     p.condition_rating,
     p.occupancy_status,
-    p.state AS property_state,
-    p.city AS property_city,
+    p.property_state,
+    p.property_city,
     -- Calculated fields
     l.loan_amount / NULLIF(b.annual_income, 0) AS loan_to_income_ratio,
     DATEDIFF('month', l.origination_date, CURRENT_DATE()) AS months_since_origination,
@@ -72,8 +72,8 @@ SELECT
     v.property_id,
     p.property_address,
     p.property_type,
-    p.state AS property_state,
-    p.city AS property_city,
+    p.property_state,
+    p.property_city,
     p.property_value AS current_value,
     v.valuation_type,
     v.valuation_date,
@@ -154,7 +154,7 @@ SELECT
     b.credit_score,
     l.delinquent_payments,
     p.property_type,
-    p.state AS property_state,
+    p.property_state,
     -- Risk scoring
     CASE 
         WHEN l.risk_rating = 'A' THEN 1
@@ -273,7 +273,7 @@ SELECT
     b.debt_to_income_ratio,
     b.borrower_type,
     b.borrower_status,
-    b.state AS borrower_state,
+    b.borrower_state,
     -- Loan metrics
     COUNT(DISTINCT l.loan_id) AS total_loans,
     SUM(l.loan_amount) AS total_loan_amount,
@@ -286,7 +286,7 @@ SELECT
     SUM(t.amount) AS total_payments,
     -- Support metrics
     COUNT(DISTINCT c.case_id) AS total_support_cases,
-    SUM(CASE WHEN c.status = 'OPEN' THEN 1 ELSE 0 END) AS open_cases,
+    SUM(CASE WHEN c.case_status = 'OPEN' THEN 1 ELSE 0 END) AS open_cases,
     AVG(c.satisfaction_rating) AS avg_satisfaction,
     -- Property metrics
     COUNT(DISTINCT p.property_id) AS total_properties,
@@ -299,14 +299,13 @@ LEFT JOIN RAW.PROPERTIES p ON l.property_id = p.property_id
 GROUP BY
     b.borrower_id, b.first_name, b.last_name, b.email, b.phone, 
     b.credit_score, b.employment_status, b.annual_income, 
-    b.debt_to_income_ratio, b.borrower_type, b.borrower_status, b.state;
+    b.debt_to_income_ratio, b.borrower_type, b.borrower_status, b.borrower_state;
 
 -- ============================================================================
 -- Display confirmation
 -- ============================================================================
-SELECT 'Analytical views created successfully' AS status;
+SELECT 'All analytical views created successfully' AS status;
 
--- Verify views exist
 SELECT 
     table_name AS view_name,
     comment AS description

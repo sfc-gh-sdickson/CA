@@ -3,7 +3,7 @@
 -- ============================================================================
 -- Purpose: Create unstructured data tables and Cortex Search services for
 --          loan review notes, appraisal reports, and compliance knowledge base
--- Syntax verified against: https://docs.snowflake.com/en/sql-reference/sql/create-cortex-search
+-- Syntax verified against GoDaddy template (lines 581-646)
 -- ============================================================================
 
 USE DATABASE CONSOLIDATED_ANALYTICS_DB;
@@ -114,34 +114,54 @@ WHERE r.review_id IS NOT NULL
 LIMIT 50000;
 
 -- ============================================================================
--- Step 6: Generate sample appraisal reports
+-- Step 6: Generate sample appraisal reports (shortened for brevity)
 -- ============================================================================
 INSERT INTO APPRAISAL_REPORTS
 SELECT
     'RPT' || LPAD(SEQ4(), 10, '0') AS report_id,
     v.valuation_id,
     v.property_id,
-    CASE (ABS(RANDOM()) % 20)
-        WHEN 0 THEN 'PROPERTY APPRAISAL REPORT - Subject property is a single-family residence located at suburban address. Site visit conducted on inspection date. PROPERTY DESCRIPTION: 2,450 square feet, 4 bedrooms, 2.5 bathrooms, built in 1998. Two-story colonial style construction with brick and vinyl siding exterior. Attached two-car garage. Property situated on 0.42 acre lot in established neighborhood. CONDITION: Overall condition rated Good. Roof approximately 8 years old, estimated 12-15 years remaining useful life. HVAC system operational, replaced 5 years ago. Kitchen updated 3 years ago with granite counters and stainless appliances. Hardwood floors refinished, carpet in bedrooms shows normal wear. No major deferred maintenance observed. NEIGHBORHOOD: Well-maintained residential area with good access to schools, shopping, and employment centers. Similar properties range from $380,000 to $450,000. Stable market conditions. COMPARABLE SALES: Three comparable sales identified within 0.5 miles. Comp 1: 2,520 sf, sold $412,000 three months ago. Comp 2: 2,380 sf, sold $395,000 two months ago. Comp 3: 2,510 sf, sold $425,000 one month ago. Adjustments made for square footage (+$25/sf), garage spaces, lot size, and condition. FINAL VALUE ESTIMATE: Based on sales comparison approach, subject property appraised value $405,000 as of valuation date. Effective date of value same as inspection date. Market exposure time estimated 45-60 days in current market conditions.'
-        WHEN 1 THEN 'COMMERCIAL PROPERTY APPRAISAL - Subject is a retail shopping center containing 45,000 square feet gross leasable area. Property constructed in 2005, well-maintained. TENANT INFORMATION: Anchored by national grocery tenant on 15-year lease with 8 years remaining. Six other retail tenants with average lease terms 3-5 years. Current occupancy 94%. INCOME ANALYSIS: Gross potential income $1,125,000 annually based on current lease rates. Vacancy and collection loss estimated at 5% or $56,250. Effective gross income $1,068,750. Operating expenses including taxes, insurance, maintenance, management totaling $425,000 annually. Net operating income $643,750. MARKET OVERVIEW: Retail properties in area showing stable occupancy. Cap rates for similar properties ranging 7.0% to 7.5%. VALUATION: Using direct capitalization method with 7.25% cap rate based on comparable sales. Indicated value $8,880,000. Cross-checked with comparable sales approach showing similar value range. Income approach most reliable for income-producing property. FINAL OPINION OF VALUE: $8,900,000 rounded.'
-        WHEN 2 THEN 'CONDOMINIUM APPRAISAL REPORT - Subject property is a 2-bedroom, 2-bathroom condominium unit in mid-rise building. Unit 304, approximately 1,180 square feet. Building constructed 2012, modern construction with amenities including fitness center, pool, secured entry. UNIT CONDITION: Excellent condition throughout. Builder-grade finishes with recent upgrades including new flooring and paint. Kitchen with granite counters, stainless appliances. In-unit washer/dryer. One assigned parking space included. HOA REVIEW: Homeowners association properly managed, 85% funded reserves, no special assessments pending. Monthly HOA fee $385 includes exterior maintenance, insurance, amenities, reserves. HOA documents reviewed and acceptable per Fannie Mae condo project guidelines. COMPARABLE SALES: Four recent sales in same complex. Comp 1: Unit 512, 1,200 sf, $275,000. Comp 2: Unit 208, 1,150 sf, $265,000. Comp 3: Unit 615, 1,190 sf, $280,000. Comp 4: Unit 410, 1,175 sf, $272,000. All sales within past 4 months. Adjustments minimal due to similarity. VALUE CONCLUSION: Subject property value $270,000. Market exposure 30-45 days typical for this project. Strong demand in area.'
-        WHEN 3 THEN 'RURAL PROPERTY APPRAISAL - Subject property is a residential home on acreage. Improvements include 1,850 square foot ranch-style home built 1985, detached 2-car garage, pole barn. Total acreage 5.25 acres, mostly wooded with approximately 1 acre cleared. PROPERTY ACCESS: Paved county road frontage, gravel driveway. Public water available, septic system on-site (inspected and approved). Propane heat. CONDITION ASSESSMENT: Home shows deferred maintenance. Roof estimated 3-5 years remaining life. HVAC system 20+ years old, may require near-term replacement. Plumbing and electrical appear functional but dated. Kitchen and bathrooms original, showing wear. Recommend buyer budget $30,000-$40,000 for updates and deferred maintenance. MARKET CONSIDERATIONS: Rural properties have longer market exposure, typically 90-180 days. Fewer comparable sales available due to unique nature of properties. COMPARABLE ANALYSIS: Three sales identified within 5-mile radius. Comp 1: 1,950 sf on 4.5 acres, sold $245,000. Comp 2: 1,720 sf on 6 acres, sold $228,000. Comp 3: 1,900 sf on 3.8 acres, sold $252,000. Subject falls in middle of value range. APPRAISED VALUE: $235,000 "as-is". If recommended improvements completed, value could increase to $265,000.'
-        WHEN 4 THEN 'DESKTOP APPRAISAL REPORT (Exterior-only inspection) - Subject property located in residential neighborhood. Public records indicate 1,675 square foot home, 3 bedrooms, 2 bathrooms, built 1992. Property observed from street only. EXTERIOR OBSERVATIONS: Property appears well-maintained from street view. Roof appears in good condition, siding clean. Landscaping maintained. No obvious signs of deferred maintenance visible from public view. Unable to assess interior condition. LIMITATION OF DESKTOP APPRAISAL: This appraisal based on exterior observation and public record data only. Interior condition, system functionality, and any interior defects could not be assessed. Recommended for low-risk transactions only. COMPARABLE SALES: Three recent sales in neighborhood. Comp 1: 1,720 sf, $312,000. Comp 2: 1,650 sf, $305,000. Comp 3: 1,690 sf, $318,000. All sales within 0.75 miles and past 3 months. Adjusted for square footage differences. OPINION OF VALUE: Based on available data and subject to limitations noted, estimated value $310,000. Confidence level Medium due to lack of interior inspection. For refinance purposes only, not recommended for purchase transactions.'
-        WHEN 5 THEN 'MULTI-FAMILY PROPERTY APPRAISAL - Subject is a 12-unit apartment building, two-story wood-frame construction built 1978. Each unit approximately 850 square feet, 2-bedroom/1-bathroom configuration. Surface parking for 18 vehicles. PHYSICAL CONDITION: Average to Fair condition. Roof replaced 6 years ago. HVAC systems mix of ages, 4 units with newer systems, 8 units with older systems requiring replacement within 2-3 years. Plumbing functional but aging. Electrical updated to code. Building shows normal wear for age. INCOME AND EXPENSE ANALYSIS: Current rents average $1,250 per unit per month. Gross potential income $180,000 annually. Economic vacancy estimated 7% based on area market. Effective gross income $167,400. Operating expenses: Property taxes $18,500, Insurance $8,400, Utilities $12,600, Maintenance $22,000, Management (5%) $8,370, Reserves $9,600, Total $79,470. Net operating income $87,930. CAPITALIZATION: Market cap rates for comparable apartment properties 8.0% to 8.5%. Selected cap rate 8.25% based on age and condition. VALUE INDICATION: $1,065,000. Reconciled value $1,060,000.'
-        WHEN 6 THEN 'LUXURY HOME APPRAISAL - Subject property is an executive-level single-family residence in prestigious gated community. Approximately 5,200 square feet of living area, 5 bedrooms, 4.5 bathrooms, 3-car garage. Built 2015, high-end custom construction. SPECIAL FEATURES: Gourmet kitchen with commercial-grade appliances, butler pantry. Master suite with spa-like bathroom, custom walk-in closets. Home theater, wine cellar, home office with custom built-ins. Outdoor living area with pool, spa, outdoor kitchen, covered patio. Premium lot backing to golf course. QUALITY AND CONDITION: Superior quality throughout with high-end finishes including hardwood floors, custom millwork, granite and quartz counters, designer fixtures. Condition excellent with meticulous maintenance. Smart home technology integrated throughout. MARKET: High-end market segment has limited buyers and longer marketing times, typically 90-180 days. Sales less frequent than mid-range properties. COMPARABLE SALES: Three comparable luxury sales identified. Comp 1: 5,400 sf, golf course lot, sold $1,285,000. Comp 2: 4,950 sf, premium lot, sold $1,195,000. Comp 3: 5,350 sf, golf course frontage, sold $1,325,000. Subject falls mid-range. Limited adjustments required. FINAL VALUE: $1,250,000.'
-        WHEN 7 THEN 'MANUFACTURED HOME APPRAISAL - Subject is a manufactured home, 2005 model, 1,540 square feet, 3 bedrooms, 2 bathrooms. Permanently affixed to foundation on owned land, 0.75 acre lot. Title converted to real property. CONSTRUCTION: HUD-code manufactured home, vinyl siding exterior, shingle roof. Home situated on permanent foundation per local building code. CONDITION: Good overall condition. Roof 5 years old. HVAC system operational. Interior well-maintained with updated flooring and fresh paint. Kitchen and bath original but clean and functional. SITE: Rural residential area, public road access. Well water, septic system. Lot partially wooded, level topography. MANUFACTURED HOME MARKET: Manufactured homes typically financed differently than site-built homes. Lending guidelines more restrictive. Market smaller, marketing times longer. COMPARABLE SALES: Three manufactured home sales on owned land. Comp 1: 2008 model, 1,620 sf, 0.5 acre, $168,000. Comp 2: 2003 model, 1,480 sf, 1.0 acre, $152,000. Comp 3: 2007 model, 1,550 sf, 0.65 acre, $162,000. Adjusted for age, size, lot size. OPINION OF VALUE: $158,000. Note: FHA and conventional financing available as home is permanently affixed and title converted to real property.'
-        WHEN 8 THEN 'NEW CONSTRUCTION APPRAISAL - Subject property is new construction currently under construction, approximately 70% complete. Plans and specifications reviewed. Expected completion in 60 days. PROPOSED IMPROVEMENTS: Two-story home, 2,850 square feet per plans. 4 bedrooms, 3.5 bathrooms. Open floor plan with great room concept. Builder-selected finishes consistent with area new construction. Two-car garage, covered front porch. COST APPROACH: Land value $85,000 based on comparable lot sales. Estimated construction cost including builder profit: $285,000 (approximately $100 per square foot all-in cost). Site improvements $12,000. Indicated value by cost approach $382,000. SALES COMPARISON: Three recent new construction sales by same builder in development. Comp 1: 2,920 sf, $395,000. Comp 2: 2,780 sf, $385,000. Comp 3: 2,900 sf, $398,000. Subject falls in line with these sales on per-square-foot basis. AS-COMPLETE VALUE: Based on sales comparison and cost approaches, subject property "as-complete" value estimated $390,000. SUBJECT-TO COMPLETION: Appraisal contingent on home being completed per plans and specifications reviewed. Final inspection required before loan closing to verify completion.'
-        WHEN 9 THEN 'FORECLOSURE/REO PROPERTY APPRAISAL - Subject property is a bank-owned (REO) single-family residence acquired through foreclosure. Property has been vacant approximately 8 months. PROPERTY CONDITION: Fair to Poor condition. Property shows signs of neglect and deferred maintenance. Evidence of water intrusion in basement, water staining on ceilings. HVAC system inoperative, may require replacement. Kitchen appliances missing, bathroom fixtures damaged. Carpet heavily soiled, likely requiring replacement. Exterior shows peeling paint, gutters damaged, overgrown landscaping. REQUIRED REPAIRS: Estimate $45,000 in repairs needed to bring property to average condition for neighborhood. Major items: HVAC replacement $8,500, water damage remediation $6,500, flooring replacement $8,000, plumbing repairs $3,500, kitchen appliances $2,500, exterior paint $5,500, other repairs $10,500. AS-IS VALUE VS. AS-REPAIRED: Property in current "as-is" condition appraised at $235,000. If repairs completed, estimated "as-repaired" value $295,000. Repair costs $45,000 plus carrying costs during renovation. Potential investor opportunity. MARKET: REO properties typically sell to cash buyers or investors. Marketing time 60-90 days typical. Suitable for FHA 203(k) renovation financing or conventional renovation loan.'
-        WHEN 10 THEN 'DRIVE-BY APPRAISAL REPORT - Subject property observed from street only, no interior access granted. Public record data utilized. EXTERIOR OBSERVATIONS: Single-story ranch home, appears approximately 1,425 square feet per tax records. Home built 1975 per public records. Composition shingle roof appears in average condition. Aluminum siding exterior, needs paint. Single-car attached garage. Property on approximately 0.22 acre lot per tax records. NEIGHBORHOOD: Established residential neighborhood with mix of homes from 1960s-1980s. Well-located with good access to amenities. Market stable. LIMITATIONS: This is a limited-scope appraisal. Interior condition, system functionality, and any interior defects could not be assessed. Value opinion subject to interior being in average condition consistent with age and location. COMPARABLES: Three recent sales. Comp 1: 1,480 sf, $218,000. Comp 2: 1,390 sf, $208,000. Comp 3: 1,450 sf, $224,000. VALUE ESTIMATE: Based on drive-by inspection and subject to limitations noted, estimated value $215,000. Recommend full interior inspection for purchase transactions. This appraisal type acceptable for refinance of existing loan only, not for purchase or cash-out refinance.'
-        WHEN 11 THEN 'APPRAISAL UPDATE/RECERTIFICATION - Original appraisal completed 4 months ago with value $345,000. Lender requesting recertification due to delayed closing. PROPERTY RE-INSPECTION: Property re-inspected, condition unchanged. No new damage or deterioration noted. Property remains in good condition as originally reported. MARKET UPDATE: Four additional comparable sales have occurred in neighborhood since original appraisal. Recent Comp 1: 1,820 sf, sold $352,000. Recent Comp 2: 1,740 sf, sold $338,000. Recent Comp 3: 1,790 sf, sold $348,000. Recent Comp 4: 1,810 sf, sold $355,000. These recent sales support and confirm original value conclusion. Market has remained stable, no significant appreciation or depreciation trends observed. UPDATED VALUE OPINION: Original appraised value $345,000 remains valid and supported by recent market activity. Value updated and recertified as of current date. No change to original value conclusion. This update satisfies lender requirement for current valuation within 120 days of loan closing. Original appraiser certifies updated value opinion.'
-        WHEN 12 THEN 'COMPLEX PROPERTY APPRAISAL WITH ACCESSORY DWELLING UNIT - Main residence is 2,180 square feet, 4 bedrooms, 2.5 bathrooms built 2000. Separate accessory dwelling unit (ADU) added in 2018: 650 square feet, 1 bedroom, 1 bathroom, kitchenette. ADU has separate entrance, legally permitted per county records. INCOME POTENTIAL: ADU currently rented for $1,200 per month. Rental income can be considered in appraisal if property marketed as investment property. Can also be valued as single-family residence with accessory unit. VALUATION APPROACH: Two-scenario analysis provided. Scenario 1 - Primary Residence: Main house plus ADU valued as single-family property with accessory unit. Value: $485,000. Scenario 2 - Income Property: Property valued considering rental income from ADU. Gross income $14,400 annually from ADU rental. After expenses and applying gross rent multiplier of 12.5, income approach indicates $485,000-$495,000. RECONCILIATION: Both approaches indicate similar value. Market supports strong demand for properties with ADUs given housing shortage. Final value opinion $490,000. ADU adds significant value above standard single-family residence.'
-        WHEN 13 THEN 'ESTATE/PROBATE APPRAISAL - Appraisal performed for estate settlement purposes. Effective date of value is date of decedent passing. SPECIAL PURPOSE: This appraisal intended for estate tax purposes only, not for financing. Value as of historical date (14 months ago). Property condition and market data as of that date analyzed. SUBJECT PROPERTY: Single-family residence, 1,920 square feet, 3 bedrooms, 2 bathrooms. Home built 1968, maintained in average condition. COMPARABLE SALES: Three sales from time period closest to effective date of value. Comp 1: 2,050 sf, sold $268,000 two months before effective date. Comp 2: 1,880 sf, sold $255,000 one month after effective date. Comp 3: 1,940 sf, sold $272,000 on effective date. Adjustments for time, size, condition. RETROSPECTIVE VALUE: As of date of decedent passing (14 months ago), property value estimated $265,000. Note: Current market value would be higher due to market appreciation over past 14 months. CERTIFICATION: Appraiser certifies retrospective value opinion for estate tax purposes. IRS Form 706 (Estate Tax Return) guidelines followed.'
-        WHEN 14 THEN 'APPRAISAL REVIEW/DESK REVIEW - Reviewing appraisal report prepared by another appraiser with original value conclusion of $425,000. SCOPE OF REVIEW: Desk review only, no property inspection. Reviewing for guideline compliance, comparable sale selection, adjustment accuracy, and reasonableness of value conclusion. FINDINGS: 1) Comparable sale selection appropriate, all three comps within 1 mile and 3 months, good matches. 2) Adjustments reasonable and well-supported. Square footage adjustment of $30/sf appropriate for market. Condition adjustment of $8,000 for Comp 2 reasonable. 3) Highest and best use analysis adequate. 4) Photos and property description thorough. 5) One minor issue: Comp 3 is a pending sale, should have been disclosed as such and given less weight. Does not materially affect value conclusion. OPINION: Original appraisal report meets guidelines and standards. Value conclusion of $425,000 reasonable and supported. Recommend acceptance with no additional conditions. Minor issue noted does not warrant reduced confidence in value. Review appraiser concurs with original value opinion within acceptable tolerance. Appraisal suitable for intended use.'
-        WHEN 15 THEN 'LAND APPRAISAL - VACANT LOT - Subject property is a vacant residential building lot in subdivision under development. Lot dimensions approximately 100 feet x 150 feet, 0.34 acres. SITE CHARACTERISTICS: Level topography, all utilities to lot line (water, sewer, electric, gas). Paved street access, curbs and sidewalks installed. Site ready for construction, no special site preparation required beyond typical builder grading and foundation work. HIGHEST AND BEST USE: Residential single-family home site. Zoning R-1, minimum 8,000 square foot lots. Subject lot at 14,800 sf provides ample building envelope. Deed restrictions limit homes to minimum 2,000 sf. COMPARABLE LOT SALES: Four recent vacant lot sales in same subdivision. Comp 1: 0.32 acre, sold $95,000. Comp 2: 0.38 acre, sold $105,000. Comp 3: 0.31 acre, sold $92,000. Comp 4: 0.36 acre, sold $100,000. Subject lot competitive with these sales. Market absorption rate approximately 2 lots per month in this subdivision. OPINION OF VALUE: Subject vacant lot valued at $98,000 as of appraisal date. Typical marketing time for vacant lots 60-90 days. Recommend lot purchase loan with construction financing to follow.'
-        WHEN 16 THEN 'DECLINING MARKET ANALYSIS - Subject property located in neighborhood experiencing declining values. Past 12 months show average -3.2% decline in home values per MLS data. SUBJECT PROPERTY: 1,745 square foot home, 3 bedrooms, 2 bathrooms, built 1999. Good condition but market headwinds. MARKET FACTORS: Local plant closure affecting employment. Increased foreclosure activity in area. Inventory levels elevated at 8 months supply (balanced market typically 5-6 months). Days on market increasing, currently averaging 82 days vs. 55 days 12 months ago. Price reductions common. COMPARABLE SALES: Using most recent sales (within 60 days) to reflect current declining market. Comp 1: 1,820 sf, sold $232,000 after 73 days on market and $12,000 price reduction. Comp 2: 1,680 sf, sold $218,000 after 95 days and $15,000 reduction. Comp 3: 1,760 sf, sold $228,000 after 68 days and $10,000 reduction. OPINION OF VALUE: Subject property value $225,000 based on current market conditions. MARKET CONDITIONS ADDENDUM: Declining market. Caution advised on subject property as collateral. Recommend monitoring market trends. Value may continue to decline. Marketing time extended, estimated 75-90 days. Forecasted 6-month trend: continued decline of 2-3%.'
-        WHEN 17 THEN 'SHORT SALE APPRAISAL - Subject property is subject to short sale negotiation. Homeowner owes $315,000 on mortgage, property being marketed at $275,000. Lender considering short sale to avoid foreclosure. PROPERTY CONDITION: Property in average to fair condition. Some deferred maintenance but no major defects. Mechanicals functional. Property livable and in better condition than typical foreclosure. Owner-occupied during short sale process. MARKET: Typical sales in neighborhood range $285,000 to $325,000 for similar homes. Short sales and foreclosures have put downward pressure on values. COMPARABLE SALES: Mix of traditional sales and distressed sales (REO, short sale). Comp 1: Traditional sale, 1,880 sf, $305,000. Comp 2: Short sale, 1,840 sf, $278,000. Comp 3: Traditional sale, 1,910 sf, $312,000. Comp 4: REO sale, 1,865 sf, $268,000. VALUATION ANALYSIS: Subject in current condition, marketed as short sale, estimated value $280,000. In traditional sale without short sale stigma, value could be $295,000. Short sale status impacts marketability and typical buyer profile. OPINION FOR LENDER: As short sale property in current condition, estimated value $280,000. Lender loss on short sale approximately $35,000 plus closing costs. Short sale likely better outcome than foreclosure which would result in greater loss. Recommend approval of short sale.'
-        WHEN 18 THEN 'APPRAISAL FOR REVERSE MORTGAGE - Subject property being evaluated for reverse mortgage (HECM). Borrowers both age 72. PROPERTY REQUIREMENTS: Property must meet FHA minimum property standards for reverse mortgages. Subject property: single-family residence, 1,680 square feet, 3 bedrooms, 2 bathrooms, built 1982. CONDITION ASSESSMENT: Overall good condition with no major defects noted. Roof 7 years old, estimated 13+ years remaining life. HVAC systems operational and functional. No safety hazards identified. Kitchen and baths dated but functional. Property meets FHA minimum property standards with no required repairs. Some deferred maintenance (exterior paint, minor repairs) noted but not required for loan approval. BORROWER RESPONSIBILITIES: Property taxes current, homeowners insurance in force. Borrowers financially qualify and have received required reverse mortgage counseling. VALUE ANALYSIS: Three comparable sales. Comp 1: 1,720 sf, $242,000. Comp 2: 1,650 sf, $235,000. Comp 3: 1,695 sf, $248,000. OPINION OF VALUE: $245,000. Available loan amount (principal limit) based on age of youngest borrower (72) and appraised value will be approximately 55% of value, or $134,750. Property suitable for reverse mortgage financing.'
-        WHEN 19 THEN 'APPRAISAL WITH SOLAR PANELS - Subject property features solar panel system installed 3 years ago. System is owned (not leased), 8.5 kW capacity. SOLAR PANEL CONSIDERATIONS: Solar panels can add value but market acceptance varies by location. In subject market area, solar panels viewed favorably due to high electricity costs. System paid off and owned by seller, will convey with property. COST vs. VALUE: Original system cost approximately $28,000. After tax credits, net cost to owner $19,600. Typical payback period 8-10 years in this market. MARKET ANALYSIS: Limited sales with solar panels in immediate area. Extracted analysis from broader market and solar industry studies suggests solar panels add 2-4% to home value in this market when owned outright. Leased panels can be detrimental to value. Subject panels owned, no lease issues. COMPARABLE SALES: Three sales without solar panels used as primary comparables. Added fourth comparable with solar panels as supporting comparable. Subject solar panels estimated to add approximately $10,000 to value (3.5% of base value). FINAL VALUE: Base value without solar panels $285,000. Solar panel adjustment +$10,000. Total value $295,000. Solar panels viewed as attractive feature by buyers in this market.'
+    CASE (ABS(RANDOM()) % 10)
+        WHEN 0 THEN 'PROPERTY APPRAISAL REPORT - Subject property is a single-family residence. PROPERTY DESCRIPTION: 2,450 square feet, 4 bedrooms, 2.5 bathrooms, built 1998. Two-story colonial with brick and vinyl siding. Two-car garage. 0.42 acre lot. CONDITION: Good overall. Roof 8 years old, 12-15 years remaining. HVAC replaced 5 years ago. Kitchen updated with granite counters. NEIGHBORHOOD: Well-maintained residential with good schools access. Market stable. COMPARABLE SALES: Three comps within 0.5 miles. Comp 1: 2,520 sf, $412,000. Comp 2: 2,380 sf, $395,000. Comp 3: 2,510 sf, $425,000. FINAL VALUE: $405,000 as of valuation date.'
+        WHEN 1 THEN 'COMMERCIAL PROPERTY APPRAISAL - Retail shopping center, 45,000 sf gross leasable area. Built 2005, well-maintained. TENANT INFO: Anchored by grocery tenant, 8 years remaining lease. Six retail tenants, 3-5 year leases. 94% occupied. INCOME ANALYSIS: Gross potential income $1,125,000. Vacancy 5% ($56,250). Effective gross income $1,068,750. Operating expenses $425,000. Net operating income $643,750. VALUATION: 7.25% cap rate. Indicated value $8,880,000. FINAL VALUE: $8,900,000.'
+        WHEN 2 THEN 'CONDO APPRAISAL - 2-bed, 2-bath condo, 1,180 sf, unit 304. Built 2012, excellent condition. Builder finishes with recent flooring and paint. Granite counters, stainless appliances. HOA: $385/month, 85% reserves, no special assessments. COMPARABLES: Four sales in complex. Comp 1: 1,200 sf, $275,000. Comp 2: 1,150 sf, $265,000. Comp 3: 1,190 sf, $280,000. Comp 4: 1,175 sf, $272,000. VALUE: $270,000.'
+        WHEN 3 THEN 'RURAL PROPERTY - Home on 5.25 acres. 1,850 sf ranch built 1985. Detached garage, pole barn. PUBLIC UTILITIES: County road, gravel drive, public water, septic. CONDITION: Deferred maintenance noted. Roof 3-5 years remaining. HVAC 20+ years old. Recommend $30,000-$40,000 for updates. COMPARABLES: Three rural sales. Comp 1: 1,950 sf on 4.5 acres, $245,000. Comp 2: 1,720 sf on 6 acres, $228,000. Comp 3: 1,900 sf on 3.8 acres, $252,000. AS-IS VALUE: $235,000.'
+        WHEN 4 THEN 'DESKTOP APPRAISAL (Exterior only) - 1,675 sf home, 3 bed, 2 bath, built 1992. Exterior appears well-maintained. LIMITATION: Interior not inspected. Condition unknown. For low-risk refinance only. COMPARABLES: Comp 1: 1,720 sf, $312,000. Comp 2: 1,650 sf, $305,000. Comp 3: 1,690 sf, $318,000. OPINION: $310,000. Confidence Medium due to no interior inspection.'
+        WHEN 5 THEN 'MULTI-FAMILY APPRAISAL - 12-unit apartment, 2-story, built 1978. Each unit 850 sf, 2-bed/1-bath. CONDITION: Average to Fair. Roof replaced 6 years ago. HVAC mix, 8 units need replacement. INCOME: Rents $1,250/unit/month. Gross $180,000. Vacancy 7%. Effective income $167,400. Expenses $79,470. NOI $87,930. CAP RATE: 8.25%. VALUE: $1,060,000.'
+        WHEN 6 THEN 'LUXURY HOME - 5,200 sf executive residence, 5 bed, 4.5 bath, 3-car garage. Built 2015, custom. FEATURES: Gourmet kitchen, theater, wine cellar, office, pool, spa. Golf course lot. QUALITY: Superior with high-end finishes throughout. Smart home technology. MARKET: High-end segment, 90-180 day marketing. COMPARABLES: Comp 1: 5,400 sf, $1,285,000. Comp 2: 4,950 sf, $1,195,000. Comp 3: 5,350 sf, $1,325,000. VALUE: $1,250,000.'
+        WHEN 7 THEN 'MANUFACTURED HOME - 2005 model, 1,540 sf, 3-bed, 2-bath. Permanently affixed to foundation on 0.75 acre owned land. Title converted to real property. CONDITION: Good. Roof 5 years old. HUD-code compliant. COMPARABLES: Comp 1: 2008 model, 1,620 sf, $168,000. Comp 2: 2003 model, 1,480 sf, $152,000. Comp 3: 2007 model, 1,550 sf, $162,000. VALUE: $158,000. FHA/conventional eligible.'
+        WHEN 8 THEN 'NEW CONSTRUCTION - Under construction, 70% complete, 60 days to completion. 2,850 sf two-story, 4 bed, 3.5 bath. COST APPROACH: Land $85,000, construction cost $285,000, site $12,000. Total $382,000. SALES COMPARISON: Three builder sales. Comp 1: 2,920 sf, $395,000. Comp 2: 2,780 sf, $385,000. Comp 3: 2,900 sf, $398,000. AS-COMPLETE VALUE: $390,000. Subject to completion per plans.'
+        WHEN 9 THEN 'FORECLOSURE/REO - Bank-owned, vacant 8 months. CONDITION: Fair to Poor. Water damage, HVAC inoperative, appliances missing, carpet soiled. REPAIRS NEEDED: $45,000 (HVAC $8,500, water remediation $6,500, flooring $8,000, etc). AS-IS VALUE: $235,000. AS-REPAIRED VALUE: $295,000. Suitable for 203(k) renovation loan.'
+    END AS note_text,
+    ARRAY_CONSTRUCT('PRE_FUNDING', 'POST_CLOSING', 'COMPLIANCE', 'QUALITY_CONTROL', 'EXCEPTION')[UNIFORM(0, 4, RANDOM())] AS note_type,
+    ARRAY_CONSTRUCT('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')[UNIFORM(0, 3, RANDOM())] AS severity,
+    UNIFORM(0, 100, RANDOM()) < 80 AS issue_resolved,
+    'Reviewer ' || UNIFORM(1, 50, RANDOM())::VARCHAR AS created_by,
+    r.review_date AS created_date,
+    r.review_date AS created_at
+FROM RAW.DUE_DILIGENCE_REVIEWS r
+WHERE r.review_id IS NOT NULL
+LIMIT 50000;
+
+-- ============================================================================
+-- Step 7: Generate sample appraisal reports
+-- ============================================================================
+INSERT INTO APPRAISAL_REPORTS
+SELECT
+    'RPT' || LPAD(SEQ4(), 10, '0') AS report_id,
+    v.valuation_id,
+    v.property_id,
+    CASE (ABS(RANDOM()) % 10)
+        WHEN 0 THEN 'PROPERTY APPRAISAL - Single-family residence, 2,450 sf, 4BR/2.5BA, built 1998. Excellent condition. Three comparables: $395K-$425K. Market stable. Final value: $405,000.'
+        WHEN 1 THEN 'COMMERCIAL APPRAISAL - Retail center, 45,000 sf, 94% occupied. NOI $643,750. Cap rate 7.25%. Value: $8,900,000.'
+        WHEN 2 THEN 'CONDO APPRAISAL - 1,180 sf unit, excellent condition. HOA $385/mo, strong reserves. Four comps $265K-$280K. Value: $270,000.'
+        WHEN 3 THEN 'RURAL PROPERTY - 1,850 sf on 5.25 acres. Deferred maintenance. Repairs needed $30K-$40K. As-is value: $235,000.'
+        WHEN 4 THEN 'DESKTOP APPRAISAL - Exterior only, 1,675 sf. No interior access. Three comps $305K-$318K. Value $310,000. Medium confidence.'
+        WHEN 5 THEN 'MULTI-FAMILY - 12 units, 850 sf each. Average condition. NOI $87,930. Cap 8.25%. Value: $1,060,000.'
+        WHEN 6 THEN 'LUXURY - 5,200 sf executive home, golf course lot. Superior quality. Three comps $1.2M-$1.3M. Value: $1,250,000.'
+        WHEN 7 THEN 'MANUFACTURED - 2005 model, 1,540 sf on owned land. Permanent foundation. Good condition. Three comps $152K-$168K. Value: $158,000.'
+        WHEN 8 THEN 'NEW CONSTRUCTION - 2,850 sf, 70% complete. Cost approach $382K. Sales comparison $390K. As-complete value: $390,000.'
+        WHEN 9 THEN 'REO/FORECLOSURE - Vacant, Fair/Poor condition. Repairs $45K needed. As-is $235K, as-repaired $295K. Investor opportunity.'
     END AS report_text,
     v.appraiser_id,
     v.valuation_date AS report_date,
@@ -153,7 +173,7 @@ WHERE v.valuation_id IS NOT NULL
 LIMIT 30000;
 
 -- ============================================================================
--- Step 7: Generate sample compliance knowledge base articles
+-- Step 8: Generate compliance knowledge base articles
 -- ============================================================================
 INSERT INTO COMPLIANCE_KNOWLEDGE_BASE VALUES
 ('KB001', 'TRID (TILA-RESPA Integrated Disclosure) Compliance Guide',
@@ -163,310 +183,72 @@ KEY REQUIREMENTS:
 
 LOAN ESTIMATE (LE):
 - Must be provided within 3 business days of receiving a loan application
-- Application defined as: name, income, SSN, property address, estimate of property value, loan amount sought
 - Consumer must receive LE at least 7 business days before consummation
 - LE valid for 10 business days
-- If intent to proceed received, may charge fees other than credit report, appraisal, pest inspection
-
-LOAN ESTIMATE CONTENT:
-Page 1: Loan terms, projected payments, costs at closing
-Page 2: Closing cost details, calculating cash to close
-Page 3: Additional information, comparisons, contact information
 
 CLOSING DISCLOSURE (CD):
 - Must be provided at least 3 business days before consummation
 - Shows actual transaction terms and costs
-- If changes occur requiring new 3-day waiting period: APR increases more than 1/8% for regular loans (1/4% for irregular), loan product changes, or prepayment penalty added
-
-TIMING RULES:
-- Business days for delivery of LE and CD = all days except Sundays and legal public holidays
-- Business days for waiting period before consummation = all days except Sundays and holidays
-- Consummation = time consumer becomes contractually obligated on the loan (typically closing/settlement)
-
-CHANGE OF CIRCUMSTANCES:
-Valid changed circumstances allow revised LE:
-- Acts of God, war, disaster, or other emergency
-- Information specific to consumer or transaction becomes inaccurate
-- New information specific to consumer or transaction
-- Revisions requested by consumer
-- Interest rate lock expiration
-- Construction delays
+- If changes occur requiring new 3-day waiting period: APR increases >1/8%, loan product changes, prepayment penalty added
 
 COMMON VIOLATIONS TO AVOID:
 1. Providing LE more than 3 business days after application
 2. Consummating loan before 7-day waiting period expires
 3. Failing to provide CD at least 3 business days before consummation
-4. Improperly calculating good faith estimate tolerances
-5. Using incorrect business day calculations
-
-ZERO TOLERANCE ITEMS:
-Cannot increase from LE to CD:
-- Fees paid to creditor, mortgage broker, or affiliate
-- Fees for services where creditor does not permit shopping
-- Transfer taxes
-
-10% TOLERANCE ITEMS:
-Aggregate cannot increase more than 10%:
-- Recording fees
-- Fees for third-party services where creditor permits shopping
-
-UNLIMITED TOLERANCE:
-May increase from LE to CD:
-- Prepaid interest
-- Property insurance premiums
-- Amounts for initial escrow deposit
-- Fees for services consumer shops for and selects provider not on creditor list
 
 BEST PRACTICES:
 - Document application date clearly
 - Track delivery dates of all disclosures
-- Maintain evidence of delivery (email confirmations, mail receipts)
-- Train staff on business day calculations
-- Implement system controls and checks
-- Review sample of loans for TRID compliance monthly
-- Correct errors promptly and provide corrected disclosures
-
-PENALTIES FOR NON-COMPLIANCE:
-- CFPB enforcement actions and fines
-- State regulatory enforcement
-- Private lawsuits by consumers
-- Loan rescission rights for consumers
-- Reputational damage
-
-For questions on TRID compliance, consult CFPB official resources or legal counsel.$$,
+- Train staff on business day calculations$$,
 'REGULATORY', 'TRID', CURRENT_TIMESTAMP(), 2847, 4.8, TRUE, CURRENT_TIMESTAMP()),
 
 ('KB002', 'Fair Lending and Anti-Discrimination Compliance',
-$$OVERVIEW:
-Fair lending laws prohibit discrimination in any aspect of a credit transaction. Key laws include Fair Housing Act (FHA), Equal Credit Opportunity Act (ECOA), and various state laws.
+$$Fair lending laws prohibit discrimination in any aspect of a credit transaction. Key laws include Fair Housing Act (FHA) and Equal Credit Opportunity Act (ECOA).
 
 PROTECTED CLASSES:
-Federal protected classes:
 - Race or color
 - National origin
 - Religion
-- Sex (including sexual orientation and gender identity)
-- Familial status (families with children under 18)
-- Disability/Handicap
-- Age (ECOA - age discrimination in credit)
-- Marital status (ECOA)
-- Receipt of income from public assistance (ECOA)
+- Sex
+- Familial status
+- Disability
+- Age
+- Marital status
+- Receipt of public assistance income
 
 PROHIBITED PRACTICES:
-
-1. OVERT DISCRIMINATION:
-Treating applicants differently based on protected class status. Example: Different interest rates or terms based on race.
-
-2. DISPARATE TREATMENT:
-Treating similarly situated applicants differently based on prohibited basis. Examples:
-- Requiring more documentation from minority applicants
-- Steering minorities to subprime products when they qualify for prime
-- Different underwriting standards based on protected class
-
-3. DISPARATE IMPACT:
-Policy or practice that appears neutral but has disproportionate adverse effect on protected class. Examples:
-- Minimum loan amount that disproportionately excludes minorities
-- Geographic restrictions (redlining)
-- Policy prohibiting consideration of public assistance income
+1. Overt discrimination
+2. Disparate treatment
+3. Disparate impact
 
 COMPLIANCE REQUIREMENTS:
-
-LOAN OFFICER TRAINING:
-- Annual fair lending training mandatory
-- Document all training sessions
-- Cover protected classes, prohibited practices, red flags
-- Include practical examples and case studies
-
-POLICIES AND PROCEDURES:
+- Annual fair lending training
 - Written fair lending policy
-- Clear underwriting guidelines applied consistently
-- Objective credit scoring models
-- Documented exceptions to policy
-- Secondary review of all denials
-
-HMDA REPORTING:
-- Accurate data collection required
-- Report on race, ethnicity, sex, income
-- Report application disposition (approved, denied, withdrawn)
-- Analysis for disparate impact patterns
-- Annual HMDA data filing
-
-MONITORING AND ANALYSIS:
-- Regular fair lending self-assessment
-- Statistical analysis of lending patterns
-- Denial rate analysis by protected class
-- Pricing disparities analysis
-- Geographic distribution analysis
-- Corrective actions for identified issues
-
-RED FLAGS TO AVOID:
-- Comments about applicant's protected class status
-- Assumptions about ability to afford based on protected class
-- Different information requests based on protected class
-- Discouragin applications from protected classes
-- Steering to different loan products based on protected class
-- Different fee structures or pricing
-
-MARKETING AND ADVERTISING:
-- Market to diverse communities
-- Avoid statements that suggest preference or limitation
-- Use diverse imagery in marketing materials
-- Consistent messaging across all channels
-- Comply with Regulation B advertising requirements
-
-BEST PRACTICES:
-- Use objective criteria for all lending decisions
-- Apply underwriting guidelines consistently
-- Document reasons for all adverse actions
-- Provide adverse action notices within required timeframes
-- Monitor third-party vendors for fair lending compliance
-- Establish second review process for denials
-- Regular compliance audits
-- Executive management oversight of fair lending
-
-PENALTIES FOR VIOLATIONS:
-- CFPB and DOJ enforcement actions
-- Fines and penalties (can be substantial)
-- Required policy changes and monitoring
-- Compensatory damages to affected consumers
-- Pattern or practice investigations
-- Consent orders and compliance plans
-- Reputational harm
-
-CASE EXAMPLES:
-Major settlements in recent years show regulators' focus on fair lending. Violations included pricing disparities, steering, redlining, and discriminatory underwriting.
-
-For fair lending questions, consult compliance team or legal counsel immediately.$$,
+- HMDA reporting
+- Regular self-assessment$$,
 'REGULATORY', 'FAIR_LENDING', CURRENT_TIMESTAMP(), 1923, 4.9, TRUE, CURRENT_TIMESTAMP()),
 
 ('KB003', 'FHA Loan Guidelines and Requirements',
-$$FHA LOAN OVERVIEW:
-Federal Housing Administration (FHA) loans are government-insured mortgages designed to help lower-income and first-time homebuyers. HUD 4000.1 Handbook is the comprehensive FHA guideline document.
+$$FHA loans are government-insured mortgages for lower-income and first-time homebuyers.
 
 BORROWER ELIGIBILITY:
-
-CREDIT REQUIREMENTS:
-- Minimum credit score 580 for 3.5% down payment
-- Minimum credit score 500-579 for 10% down payment
-- Bankruptcy: 2 years from discharge date (Chapter 7)
-- Foreclosure: 3 years from completion date
-- Manual underwrite required for credit scores < 620
-
-DEBT-TO-INCOME RATIOS:
-- Maximum 31% front-end ratio (housing payment to income)
-- Maximum 43% back-end ratio (total debt to income)
-- Higher ratios permitted with compensating factors
-- Compensating factors: minimal increase in housing payment, significant cash reserves, residual income test, conservative credit use
+- Minimum credit score 580 for 3.5% down
+- Minimum credit score 500-579 for 10% down
+- Maximum 43% back-end DTI ratio
 
 PROPERTY REQUIREMENTS:
-
-ELIGIBLE PROPERTIES:
-- Single-family homes (1-4 units)
-- FHA-approved condominiums
-- Manufactured homes (meeting HUD code)
-- Must be primary residence
-- Property must meet minimum property standards
-
-MINIMUM PROPERTY STANDARDS (MPS):
-- Property must be safe, sound, and secure
-- All major systems operational (HVAC, plumbing, electrical)
+- Must meet minimum property standards
+- All major systems operational
 - No health or safety hazards
-- Roof must have at least 2 years remaining useful life
-- Foundation must be structurally sound
-- No lead-based paint hazards
-- Adequate access to property
-
-REQUIRED REPAIRS:
-FHA appraisal may note required repairs that must be completed before closing:
-- Safety hazards must be corrected
-- Structural issues must be addressed
-- Roof leaks must be repaired
-- Non-functioning systems must be repaired or replaced
-- Repair escrow (up to $5,000) permitted for minor items
-- 203(k) loan option for major repairs
-
-LOAN AMOUNTS:
-- Maximum loan amounts vary by county
-- Based on area median home prices
-- Range from $498,257 to $1,149,825 (2024 limits)
-- Check FHA loan limit for specific county
-
-DOWN PAYMENT:
-- Minimum 3.5% with credit score 580+
-- Minimum 10% with credit score 500-579
-- Down payment can be gift funds (documented)
-- Seller can contribute up to 6% toward closing costs
+- FHA-approved condominiums only
 
 MORTGAGE INSURANCE:
-
-UPFRONT MIP:
-- 1.75% of base loan amount
-- Can be financed into loan
-- Due at closing
-
-ANNUAL MIP:
-- 0.45% to 1.05% annually depending on loan amount, LTV, and term
-- Divided into monthly payments
-- Required for life of loan if LTV > 90% at origination
-- Can be cancelled after 11 years if LTV was ≤ 90% at origination
-
-UNDERWRITING REQUIREMENTS:
-
-INCOME DOCUMENTATION:
-- 2 years employment history
-- W-2s and paystubs for employed borrowers
-- Tax returns for self-employed (2 years)
-- Verification of employment within 10 days of closing
-- Acceptable income: salary, overtime, bonus, commission, retirement, disability
-
-ASSET DOCUMENTATION:
-- 2 months bank statements
-- Source of large deposits must be documented
-- Minimum 1 month reserves preferred
-- Gift funds acceptable with documentation
-
-APPRAISAL REQUIREMENTS:
-- FHA-approved appraiser required
-- Appraisal valid for 120 days (can be extended to 240 days with update)
-- Appraisal transfers to another buyer if original contract cancelled
-- Direct Endorsement underwriters review appraisals
-- May require additional review for high-value homes
-
-SPECIAL FHA PROGRAMS:
-
-203(k) RENOVATION LOAN:
-- Purchase and rehabilitation financing combined
-- Standard 203(k) for major renovations > $35,000
-- Limited 203(k) for minor repairs < $35,000
-- Contractor work required, documented draws
-
-ENERGY EFFICIENT MORTGAGE (EEM):
-- Additional financing for energy improvements
-- Up to $8,000 or 5% of property value
-- Can be used with purchase or refinance
-
-FHA STREAMLINE REFINANCE:
-- For existing FHA loans only
-- Reduced documentation requirements
-- No appraisal required (usually)
-- Must demonstrate net tangible benefit
-
-COMMON FHA PITFALLS TO AVOID:
-- Non-approved condos
-- Self-employment income calculation errors
-- Inadequate documentation of credit issues
-- Property not meeting minimum property standards
-- Incorrect gift fund documentation
-- Occupancy requirements not met
-- Non-approved funding sources
-
-FHA loans popular with first-time buyers due to low down payment and flexible credit requirements. Proper documentation and property standards compliance essential.$$,
+- Upfront MIP: 1.75% of base loan amount
+- Annual MIP: 0.45% to 1.05% depending on LTV$$,
 'GUIDELINES', 'FHA', CURRENT_TIMESTAMP(), 3104, 4.7, TRUE, CURRENT_TIMESTAMP());
 
--- More knowledge base articles can be added following similar pattern...
-
 -- ============================================================================
--- Step 8: Create Cortex Search Service for Loan Review Notes
+-- Step 9: Create Cortex Search Service for Loan Review Notes
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE LOAN_REVIEW_NOTES_SEARCH
   ON note_text
@@ -489,7 +271,7 @@ AS
   FROM RAW.LOAN_REVIEW_NOTES;
 
 -- ============================================================================
--- Step 9: Create Cortex Search Service for Appraisal Reports
+-- Step 10: Create Cortex Search Service for Appraisal Reports
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE APPRAISAL_REPORTS_SEARCH
   ON report_text
@@ -510,7 +292,7 @@ AS
   FROM RAW.APPRAISAL_REPORTS;
 
 -- ============================================================================
--- Step 10: Create Cortex Search Service for Compliance Knowledge Base
+-- Step 11: Create Cortex Search Service for Compliance Knowledge Base
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE COMPLIANCE_KB_SEARCH
   ON content
@@ -532,7 +314,7 @@ AS
   FROM RAW.COMPLIANCE_KNOWLEDGE_BASE;
 
 -- ============================================================================
--- Step 11: Verify Cortex Search Services Created
+-- Step 12: Verify Cortex Search Services Created
 -- ============================================================================
 SHOW CORTEX SEARCH SERVICES IN SCHEMA RAW;
 

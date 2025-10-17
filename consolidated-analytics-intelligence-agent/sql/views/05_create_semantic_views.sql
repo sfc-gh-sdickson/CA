@@ -2,10 +2,9 @@
 -- Consolidated Analytics Intelligence Agent - Semantic Views
 -- ============================================================================
 -- Purpose: Create semantic views for Snowflake Intelligence agents
--- All syntax VERIFIED against official documentation and GoDaddy template:
--- https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view
+-- All syntax VERIFIED against GoDaddy template (lines 23-336)
 -- 
--- Syntax Verification Notes:
+-- Syntax Verification:
 -- 1. Clause order is MANDATORY: TABLES → RELATIONSHIPS → DIMENSIONS → METRICS → COMMENT
 -- 2. Semantic expression format: semantic_name AS sql_expression
 -- 3. No self-referencing relationships allowed
@@ -18,9 +17,9 @@ USE SCHEMA ANALYTICS;
 USE WAREHOUSE CA_ANALYTICS_WH;
 
 -- ============================================================================
--- Semantic View 1: Loan Portfolio Intelligence
+-- Semantic View 1: Borrower & Loan Intelligence
 -- ============================================================================
-CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
+CREATE OR REPLACE SEMANTIC VIEW SV_BORROWER_LOAN_INTELLIGENCE
   TABLES (
     borrowers AS RAW.BORROWERS
       PRIMARY KEY (borrower_id)
@@ -30,10 +29,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
       PRIMARY KEY (loan_id)
       WITH SYNONYMS ('mortgages', 'financing', 'debt obligations')
       COMMENT = 'Mortgage loan portfolio',
-    properties AS RAW.PROPERTIES
-      PRIMARY KEY (property_id)
-      WITH SYNONYMS ('real estate', 'assets', 'collateral')
-      COMMENT = 'Real estate properties',
     transactions AS RAW.TRANSACTIONS
       PRIMARY KEY (transaction_id)
       WITH SYNONYMS ('payments', 'disbursements', 'cash flows')
@@ -41,7 +36,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
   )
   RELATIONSHIPS (
     loans(borrower_id) REFERENCES borrowers(borrower_id),
-    loans(property_id) REFERENCES properties(property_id),
     transactions(loan_id) REFERENCES loans(loan_id)
   )
   DIMENSIONS (
@@ -54,11 +48,11 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
     borrowers.employment_status AS employment_status
       WITH SYNONYMS ('job status', 'work status', 'employment type')
       COMMENT = 'Employment status of borrower',
-    borrowers.state AS borrstate
-      WITH SYNONYMS ('borrower state', 'state', 'borrower location', 'residence state')
+    borrowers.borrower_state AS state
+      WITH SYNONYMS ('state', 'borrower location', 'residence state')
       COMMENT = 'Borrower state location',
-    borrowers.city AS borrcity
-      WITH SYNONYMS ('borrower city', 'city', 'residence city')
+    borrowers.borrower_city AS city
+      WITH SYNONYMS ('city', 'borrower city', 'residence city')
       COMMENT = 'Borrower city location',
     loans.loan_type AS loan_type
       WITH SYNONYMS ('mortgage type', 'loan product', 'financing type')
@@ -69,21 +63,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
     loans.risk_rating AS risk_rating
       WITH SYNONYMS ('risk level', 'risk grade', 'credit rating')
       COMMENT = 'Loan risk rating: A, B, C, D',
-    properties.property_type AS property_type
-      WITH SYNONYMS ('real estate type', 'asset type', 'property class')
-      COMMENT = 'Type: RESIDENTIAL_SINGLE_FAMILY, RESIDENTIAL_CONDO, MULTI_FAMILY, COMMERCIAL',
-    properties.state AS propstate
-      WITH SYNONYMS ('property state', 'property location state', 'collateral state')
-      COMMENT = 'Property state location',
-    properties.city AS propcity
-      WITH SYNONYMS ('property city', 'property location city', 'collateral city')
-      COMMENT = 'Property city location',
-    properties.occupancy_status AS occupancy_status
-      WITH SYNONYMS ('occupancy', 'tenant status', 'property occupancy')
-      COMMENT = 'Property occupancy status: OWNER_OCCUPIED, RENTED, VACANT, SECOND_HOME',
-    properties.condition_rating AS condition_rating
-      WITH SYNONYMS ('property condition', 'asset condition', 'maintenance rating')
-      COMMENT = 'Property condition: EXCELLENT, GOOD, AVERAGE, FAIR, POOR',
     transactions.transaction_type AS transaction_type
       WITH SYNONYMS ('payment type', 'transaction category')
       COMMENT = 'Type of transaction',
@@ -128,15 +107,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
     borrowers.avg_annual_income AS AVG(annual_income)
       WITH SYNONYMS ('average income', 'mean salary', 'typical income')
       COMMENT = 'Average borrower annual income',
-    properties.total_properties AS COUNT(DISTINCT property_id)
-      WITH SYNONYMS ('property count', 'asset count', 'real estate count')
-      COMMENT = 'Total number of properties',
-    properties.avg_property_value AS AVG(property_value)
-      WITH SYNONYMS ('average property value', 'mean valuation', 'typical property value')
-      COMMENT = 'Average property value',
-    properties.avg_square_footage AS AVG(square_footage)
-      WITH SYNONYMS ('average size', 'mean square feet', 'typical size')
-      COMMENT = 'Average property square footage',
     transactions.total_transactions AS COUNT(DISTINCT transaction_id)
       WITH SYNONYMS ('transaction count', 'payment count', 'total payments')
       COMMENT = 'Total number of transactions',
@@ -153,12 +123,12 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
       WITH SYNONYMS ('interest payments', 'interest income', 'interest collected')
       COMMENT = 'Total interest amount paid'
   )
-  COMMENT = 'Loan Portfolio Intelligence - comprehensive view of loans, borrowers, properties, and transactions for mortgage analytics';
+  COMMENT = 'Borrower & Loan Intelligence - comprehensive view of borrowers, loans, and transactions for mortgage analytics';
 
 -- ============================================================================
--- Semantic View 2: Valuation & Risk Intelligence
+-- Semantic View 2: Property & Valuation Intelligence
 -- ============================================================================
-CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
+CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_VALUATION_INTELLIGENCE
   TABLES (
     properties AS RAW.PROPERTIES
       PRIMARY KEY (property_id)
@@ -168,10 +138,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
       PRIMARY KEY (valuation_id)
       WITH SYNONYMS ('appraisals', 'property assessments', 'valuations')
       COMMENT = 'Property valuations and appraisals',
-    loans AS RAW.LOANS
-      PRIMARY KEY (loan_id)
-      WITH SYNONYMS ('mortgages', 'financing')
-      COMMENT = 'Mortgage loans',
     analysts AS RAW.ANALYSTS
       PRIMARY KEY (analyst_id)
       WITH SYNONYMS ('appraisers', 'reviewers', 'staff')
@@ -179,22 +145,24 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
   )
   RELATIONSHIPS (
     valuations(property_id) REFERENCES properties(property_id),
-    valuations(appraiser_id) REFERENCES analysts(analyst_id),
-    loans(property_id) REFERENCES properties(property_id)
+    valuations(appraiser_id) REFERENCES analysts(analyst_id)
   )
   DIMENSIONS (
     properties.property_type AS property_type
       WITH SYNONYMS ('real estate type', 'asset class')
       COMMENT = 'Property type classification',
-    properties.state AS propstate
-      WITH SYNONYMS ('property state', 'state', 'location')
+    properties.property_state AS state
+      WITH SYNONYMS ('state', 'property location', 'collateral state')
       COMMENT = 'Property state location',
-    properties.city AS propcity
-      WITH SYNONYMS ('property city', 'city', 'location city')
+    properties.property_city AS city
+      WITH SYNONYMS ('city', 'property location city', 'collateral city')
       COMMENT = 'Property city location',
     properties.condition_rating AS property_condition
       WITH SYNONYMS ('condition', 'maintenance rating')
       COMMENT = 'Property condition rating',
+    properties.occupancy_status AS occupancy_status
+      WITH SYNONYMS ('occupancy', 'tenant status')
+      COMMENT = 'Property occupancy status',
     valuations.valuation_type AS valuation_type
       WITH SYNONYMS ('appraisal type', 'assessment type')
       COMMENT = 'Type: FULL_APPRAISAL, DESKTOP_APPRAISAL, BPO, AVM, DRIVE_BY',
@@ -207,12 +175,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
     valuations.market_conditions AS market_conditions
       WITH SYNONYMS ('market state', 'market environment')
       COMMENT = 'Market conditions at time of valuation',
-    loans.risk_rating AS risk_rating
-      WITH SYNONYMS ('risk grade', 'credit rating')
-      COMMENT = 'Loan risk rating',
-    loans.loan_status AS loan_status
-      WITH SYNONYMS ('loan state', 'mortgage status')
-      COMMENT = 'Current loan status',
     analysts.specialization AS appraiser_specialization
       WITH SYNONYMS ('expertise', 'specialty area')
       COMMENT = 'Appraiser specialization',
@@ -233,6 +195,9 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
     properties.total_property_value AS SUM(property_value)
       WITH SYNONYMS ('total value', 'aggregate property value')
       COMMENT = 'Total property value',
+    properties.avg_square_footage AS AVG(square_footage)
+      WITH SYNONYMS ('average size', 'mean square feet')
+      COMMENT = 'Average property square footage',
     valuations.total_valuations AS COUNT(DISTINCT valuation_id)
       WITH SYNONYMS ('valuation count', 'appraisal count')
       COMMENT = 'Total number of valuations',
@@ -242,12 +207,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
     valuations.avg_comparable_count AS AVG(comparable_count)
       WITH SYNONYMS ('average comps', 'mean comparable count')
       COMMENT = 'Average number of comparables used',
-    loans.total_loans AS COUNT(DISTINCT loan_id)
-      WITH SYNONYMS ('loan count', 'mortgage count')
-      COMMENT = 'Total number of loans',
-    loans.avg_ltv_ratio AS AVG(ltv_ratio)
-      WITH SYNONYMS ('average ltv', 'mean loan to value')
-      COMMENT = 'Average loan-to-value ratio',
     analysts.total_analysts AS COUNT(DISTINCT analyst_id)
       WITH SYNONYMS ('appraiser count', 'staff count')
       COMMENT = 'Total number of analysts',
@@ -255,7 +214,7 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
       WITH SYNONYMS ('average rating', 'mean quality score')
       COMMENT = 'Average analyst review score'
   )
-  COMMENT = 'Valuation & Risk Intelligence - property valuations, appraisals, and risk metrics for portfolio analysis';
+  COMMENT = 'Property & Valuation Intelligence - property valuations, appraisals, and quality metrics';
 
 -- ============================================================================
 -- Semantic View 3: Due Diligence & Operations Intelligence
@@ -312,7 +271,7 @@ CREATE OR REPLACE SEMANTIC VIEW SV_DUE_DILIGENCE_INTELLIGENCE
     cases.priority AS case_priority
       WITH SYNONYMS ('urgency', 'importance')
       COMMENT = 'Case priority: LOW, MEDIUM, HIGH, URGENT',
-    cases.status AS case_status
+    cases.case_status AS case_status
       WITH SYNONYMS ('case state', 'ticket status')
       COMMENT = 'Case status: OPEN, IN_PROGRESS, RESOLVED'
   )

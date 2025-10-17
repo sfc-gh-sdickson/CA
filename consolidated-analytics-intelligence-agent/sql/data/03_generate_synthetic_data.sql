@@ -74,10 +74,10 @@ SELECT
         ELSE 'CLOSED'
     END AS borrower_status,
     ARRAY_CONSTRUCT('CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI', 
-                    'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI')[UNIFORM(0, 19, RANDOM())] AS state,
+                    'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI')[UNIFORM(0, 19, RANDOM())] AS borrower_state,
     ARRAY_CONSTRUCT('Los Angeles', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 
                     'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 
-                    'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Boston')[UNIFORM(0, 17, RANDOM())] AS city,
+                    'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Boston')[UNIFORM(0, 17, RANDOM())] AS borrower_city,
     DATEADD('day', -1 * UNIFORM(30, 3650, RANDOM()), CURRENT_TIMESTAMP()) AS created_at,
     CURRENT_TIMESTAMP() AS updated_at
 FROM TABLE(GENERATOR(ROWCOUNT => 50000));
@@ -94,9 +94,9 @@ SELECT
         ARRAY_CONSTRUCT('St', 'Ave', 'Blvd', 'Dr', 'Ln', 'Rd', 'Way', 'Ct')[UNIFORM(0, 7, RANDOM())] AS property_address,
     ARRAY_CONSTRUCT('Los Angeles', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 
                     'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 
-                    'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Boston')[UNIFORM(0, 17, RANDOM())] AS city,
+                    'Charlotte', 'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Boston')[UNIFORM(0, 17, RANDOM())] AS property_city,
     ARRAY_CONSTRUCT('CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI', 
-                    'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI')[UNIFORM(0, 19, RANDOM())] AS state,
+                    'NJ', 'VA', 'WA', 'AZ', 'MA', 'TN', 'IN', 'MO', 'MD', 'WI')[UNIFORM(0, 19, RANDOM())] AS property_state,
     LPAD(UNIFORM(10000, 99999, RANDOM()), 5, '0') AS zip_code,
     CASE 
         WHEN UNIFORM(0, 100, RANDOM()) < 70 THEN 'RESIDENTIAL_SINGLE_FAMILY'
@@ -280,7 +280,7 @@ SELECT
         WHEN UNIFORM(0, 100, RANDOM()) < 70 THEN 'RESOLVED'
         WHEN UNIFORM(0, 100, RANDOM()) < 20 THEN 'IN_PROGRESS'
         ELSE 'OPEN'
-    END AS status,
+    END AS case_status,
     'ANL' || LPAD(UNIFORM(1, 200, RANDOM()), 5, '0') AS assigned_analyst_id,
     DATEADD('day', -1 * UNIFORM(0, 730, RANDOM()), CURRENT_TIMESTAMP()) AS created_date,
     CASE 

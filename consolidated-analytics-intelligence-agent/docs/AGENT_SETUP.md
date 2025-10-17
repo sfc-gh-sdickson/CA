@@ -1,3 +1,5 @@
+<img src="../Snowflake_Logo.svg" width="200">
+
 # Consolidated Analytics Intelligence Agent - Setup Guide
 
 This guide walks through configuring a Snowflake Intelligence agent for Consolidated Analytics' mortgage and real estate finance intelligence solution.
@@ -73,8 +75,8 @@ Execute the SQL files in the following sequence:
 ```sql
 -- Execute: sql/views/05_create_semantic_views.sql
 -- Creates semantic views for AI agents (VERIFIED SYNTAX):
---   - SV_LOAN_PORTFOLIO_INTELLIGENCE
---   - SV_VALUATION_RISK_INTELLIGENCE
+--   - SV_BORROWER_LOAN_INTELLIGENCE
+--   - SV_PROPERTY_VALUATION_INTELLIGENCE
 --   - SV_DUE_DILIGENCE_INTELLIGENCE
 -- Execution time: < 5 seconds
 ```
@@ -109,12 +111,6 @@ Execute the SQL files in the following sequence:
 Name: Consolidated_Analytics_Intelligence_Agent
 Description: AI agent for analyzing mortgage loans, property valuations, due diligence reviews, and real estate finance operations
 ```
-
-**Data Sources (Semantic Views):**
-Add the following semantic views:
-- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_LOAN_PORTFOLIO_INTELLIGENCE`
-- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_VALUATION_RISK_INTELLIGENCE`
-- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_DUE_DILIGENCE_INTELLIGENCE`
 
 **Warehouse:**
 - Select: `CA_ANALYTICS_WH`
@@ -161,8 +157,8 @@ Cortex Analyst enables the agent to query your semantic views using natural lang
 3. Configure:
    - **Name**: Consolidated Analytics Data Analysis
    - **Semantic models**: Select all three semantic views:
-     - `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_LOAN_PORTFOLIO_INTELLIGENCE`
-     - `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_VALUATION_RISK_INTELLIGENCE`
+     - `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_BORROWER_LOAN_INTELLIGENCE`
+     - `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_PROPERTY_VALUATION_INTELLIGENCE`
      - `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_DUE_DILIGENCE_INTELLIGENCE`
    - **Warehouse**: `CA_ANALYTICS_WH`
    - **Description**:
@@ -236,11 +232,11 @@ Cortex Search enables semantic search over unstructured text data.
 Start with simple questions to verify connectivity:
 
 1. **"How many loans does Consolidated Analytics have?"**
-   - Should query SV_LOAN_PORTFOLIO_INTELLIGENCE
+   - Should query SV_BORROWER_LOAN_INTELLIGENCE
    - Expected: ~75,000 loans
 
 2. **"What is the average property value?"**
-   - Should query SV_LOAN_PORTFOLIO_INTELLIGENCE or SV_VALUATION_RISK_INTELLIGENCE
+   - Should query SV_PROPERTY_VALUATION_INTELLIGENCE
    - Expected: Varies by property type
 
 3. **"How many due diligence reviews have been completed?"**
@@ -249,28 +245,15 @@ Start with simple questions to verify connectivity:
 
 ### 5.2 Complex Test Questions
 
-Test with the 10 complex questions provided in `docs/questions.md`, including:
-
-1. Loan Portfolio Risk Concentration Analysis
-2. Valuation Variance Analysis
-3. Due Diligence Quality Metrics
-4. Delinquency Trend Prediction
-5. Geographic Market Performance
-6. Appraisal Turnaround Efficiency
-7. Compliance Exception Analysis
-8. Portfolio Profitability Analysis
-9. Client Relationship Analysis
-10. Analyst Productivity Benchmarking
+Test with the 10 complex questions provided in `docs/questions.md`
 
 ### 5.3 Cortex Search Test Questions
 
 Test unstructured data search:
 
 1. **"Search loan review notes for properties with foundation issues"**
-2. **"Find appraisal reports mentioning flood zones or water damage"**
+2. **"Find appraisal reports mentioning commercial properties"**
 3. **"What does our compliance knowledge base say about TRID regulations?"**
-4. **"Search for loan reviews with title insurance exceptions"**
-5. **"Find appraisals where comparables were challenging to find"**
 
 ---
 
@@ -312,7 +295,7 @@ SELECT PARSE_JSON(
   SNOWFLAKE.CORTEX.SEARCH_PREVIEW(
       'CONSOLIDATED_ANALYTICS_DB.RAW.COMPLIANCE_KB_SEARCH',
       '{
-        "query": "FHA loan requirements and guidelines",
+        "query": "FHA loan requirements",
         "columns":["title", "content"],
         "limit":5
       }'
@@ -353,10 +336,10 @@ GRANT ROLE CA_AGENT_USER TO USER your_username;
 **Solution:**
 ```sql
 -- Verify semantic views exist
-SHOW VIEWS IN SCHEMA CONSOLIDATED_ANALYTICS_DB.ANALYTICS;
+SHOW SEMANTIC VIEWS IN SCHEMA CONSOLIDATED_ANALYTICS_DB.ANALYTICS;
 
 -- Check permissions
-SHOW GRANTS ON VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE;
+SHOW GRANTS ON VIEW SV_BORROWER_LOAN_INTELLIGENCE;
 ```
 
 ### Issue: Cortex Search returns no results
@@ -373,14 +356,6 @@ SELECT COUNT(*) FROM RAW.LOAN_REVIEW_NOTES;
 SHOW TABLES LIKE 'LOAN_REVIEW_NOTES' IN SCHEMA RAW;
 ```
 
-### Issue: Slow query performance
-
-**Solution:**
-- Increase warehouse size (MEDIUM or LARGE)
-- Check for missing filters on date columns
-- Review query execution plan
-- Consider materializing frequently-used aggregations
-
 ---
 
 ## Success Metrics
@@ -393,20 +368,9 @@ Your agent is successfully configured when:
 ✅ Agent can answer simple test questions  
 ✅ Agent can answer complex analytical questions  
 ✅ Cortex Search returns relevant results  
-✅ Query performance is acceptable (< 30 seconds for complex queries)  
-✅ Results are accurate and match expected business logic  
-
----
-
-## Support Resources
-
-- **Snowflake Documentation**: https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view
-- **Consolidated Analytics**: https://www.consolidatedanalytics.com
-- **Snowflake Community**: https://community.snowflake.com
 
 ---
 
 **Version:** 1.0  
 **Created:** October 2025  
 **Based on:** GoDaddy Intelligence Template with Verified Syntax
-

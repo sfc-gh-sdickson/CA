@@ -25,8 +25,8 @@ CREATE OR REPLACE TABLE BORROWERS (
     debt_to_income_ratio NUMBER(5,2),
     borrower_type VARCHAR(30) DEFAULT 'INDIVIDUAL',
     borrower_status VARCHAR(30) DEFAULT 'ACTIVE',
-    state VARCHAR(2),
-    city VARCHAR(100),
+    borrower_state VARCHAR(2),
+    borrower_city VARCHAR(100),
     created_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
     updated_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
 );
@@ -37,8 +37,8 @@ CREATE OR REPLACE TABLE BORROWERS (
 CREATE OR REPLACE TABLE PROPERTIES (
     property_id VARCHAR(30) PRIMARY KEY,
     property_address VARCHAR(500) NOT NULL,
-    city VARCHAR(100),
-    state VARCHAR(2),
+    property_city VARCHAR(100),
+    property_state VARCHAR(2),
     zip_code VARCHAR(10),
     property_type VARCHAR(50) NOT NULL,
     property_value NUMBER(12,2),
@@ -169,7 +169,7 @@ CREATE OR REPLACE TABLE SUPPORT_CASES (
     loan_id VARCHAR(30),
     case_type VARCHAR(50) NOT NULL,
     priority VARCHAR(20) DEFAULT 'MEDIUM',
-    status VARCHAR(30) DEFAULT 'OPEN',
+    case_status VARCHAR(30) DEFAULT 'OPEN',
     assigned_analyst_id VARCHAR(20),
     created_date TIMESTAMP_NTZ NOT NULL,
     resolved_date TIMESTAMP_NTZ,
