@@ -154,7 +154,7 @@ SELECT
     b.credit_score,
     l.delinquent_payments,
     p.property_type,
-    p.property_state,
+    p.state AS property_state,
     -- Risk scoring
     CASE 
         WHEN l.risk_rating = 'A' THEN 1
