@@ -374,6 +374,17 @@ Your agent is successfully configured when:
 ✅ Agent can answer simple test questions  
 ✅ Agent can answer complex analytical questions  
 ✅ Cortex Search returns relevant results  
+✅ Query performance is acceptable (< 30 seconds for complex queries)  
+✅ Results are accurate and match expected business logic  
+
+---
+
+## Support Resources
+
+- **Snowflake Documentation**: https://docs.snowflake.com/en/sql-reference/sql/create-semantic-view
+- **Cortex Search Documentation**: https://docs.snowflake.com/en/sql-reference/sql/create-cortex-search
+- **Consolidated Analytics**: https://www.consolidatedanalytics.com
+- **Snowflake Community**: https://community.snowflake.com
 
 ---
 
