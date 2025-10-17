@@ -1,6 +1,6 @@
-# Consolidated Analytics Intelligence Agent Solution
+<img src="Snowflake_Logo.svg" width="200">
 
-<img src="https://www.snowflake.com/wp-content/themes/snowflake/assets/img/brand-guidelines/logo-sno-blue-example.svg" width="200">
+# Consolidated Analytics Intelligence Agent Solution
 
 ## About Consolidated Analytics
 
