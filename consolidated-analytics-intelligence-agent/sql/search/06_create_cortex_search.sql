@@ -132,36 +132,6 @@ SELECT
         WHEN 7 THEN 'MANUFACTURED HOME - 2005 model, 1,540 sf, 3-bed, 2-bath. Permanently affixed to foundation on 0.75 acre owned land. Title converted to real property. CONDITION: Good. Roof 5 years old. HUD-code compliant. COMPARABLES: Comp 1: 2008 model, 1,620 sf, $168,000. Comp 2: 2003 model, 1,480 sf, $152,000. Comp 3: 2007 model, 1,550 sf, $162,000. VALUE: $158,000. FHA/conventional eligible.'
         WHEN 8 THEN 'NEW CONSTRUCTION - Under construction, 70% complete, 60 days to completion. 2,850 sf two-story, 4 bed, 3.5 bath. COST APPROACH: Land $85,000, construction cost $285,000, site $12,000. Total $382,000. SALES COMPARISON: Three builder sales. Comp 1: 2,920 sf, $395,000. Comp 2: 2,780 sf, $385,000. Comp 3: 2,900 sf, $398,000. AS-COMPLETE VALUE: $390,000. Subject to completion per plans.'
         WHEN 9 THEN 'FORECLOSURE/REO - Bank-owned, vacant 8 months. CONDITION: Fair to Poor. Water damage, HVAC inoperative, appliances missing, carpet soiled. REPAIRS NEEDED: $45,000 (HVAC $8,500, water remediation $6,500, flooring $8,000, etc). AS-IS VALUE: $235,000. AS-REPAIRED VALUE: $295,000. Suitable for 203(k) renovation loan.'
-    END AS note_text,
-    ARRAY_CONSTRUCT('PRE_FUNDING', 'POST_CLOSING', 'COMPLIANCE', 'QUALITY_CONTROL', 'EXCEPTION')[UNIFORM(0, 4, RANDOM())] AS note_type,
-    ARRAY_CONSTRUCT('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')[UNIFORM(0, 3, RANDOM())] AS severity,
-    UNIFORM(0, 100, RANDOM()) < 80 AS issue_resolved,
-    'Reviewer ' || UNIFORM(1, 50, RANDOM())::VARCHAR AS created_by,
-    r.review_date AS created_date,
-    r.review_date AS created_at
-FROM RAW.DUE_DILIGENCE_REVIEWS r
-WHERE r.review_id IS NOT NULL
-LIMIT 50000;
-
--- ============================================================================
--- Step 7: Generate sample appraisal reports
--- ============================================================================
-INSERT INTO APPRAISAL_REPORTS
-SELECT
-    'RPT' || LPAD(SEQ4(), 10, '0') AS report_id,
-    v.valuation_id,
-    v.property_id,
-    CASE (ABS(RANDOM()) % 10)
-        WHEN 0 THEN 'PROPERTY APPRAISAL - Single-family residence, 2,450 sf, 4BR/2.5BA, built 1998. Excellent condition. Three comparables: $395K-$425K. Market stable. Final value: $405,000.'
-        WHEN 1 THEN 'COMMERCIAL APPRAISAL - Retail center, 45,000 sf, 94% occupied. NOI $643,750. Cap rate 7.25%. Value: $8,900,000.'
-        WHEN 2 THEN 'CONDO APPRAISAL - 1,180 sf unit, excellent condition. HOA $385/mo, strong reserves. Four comps $265K-$280K. Value: $270,000.'
-        WHEN 3 THEN 'RURAL PROPERTY - 1,850 sf on 5.25 acres. Deferred maintenance. Repairs needed $30K-$40K. As-is value: $235,000.'
-        WHEN 4 THEN 'DESKTOP APPRAISAL - Exterior only, 1,675 sf. No interior access. Three comps $305K-$318K. Value $310,000. Medium confidence.'
-        WHEN 5 THEN 'MULTI-FAMILY - 12 units, 850 sf each. Average condition. NOI $87,930. Cap 8.25%. Value: $1,060,000.'
-        WHEN 6 THEN 'LUXURY - 5,200 sf executive home, golf course lot. Superior quality. Three comps $1.2M-$1.3M. Value: $1,250,000.'
-        WHEN 7 THEN 'MANUFACTURED - 2005 model, 1,540 sf on owned land. Permanent foundation. Good condition. Three comps $152K-$168K. Value: $158,000.'
-        WHEN 8 THEN 'NEW CONSTRUCTION - 2,850 sf, 70% complete. Cost approach $382K. Sales comparison $390K. As-complete value: $390,000.'
-        WHEN 9 THEN 'REO/FORECLOSURE - Vacant, Fair/Poor condition. Repairs $45K needed. As-is $235K, as-repaired $295K. Investor opportunity.'
     END AS report_text,
     v.appraiser_id,
     v.valuation_date AS report_date,
@@ -173,7 +143,7 @@ WHERE v.valuation_id IS NOT NULL
 LIMIT 30000;
 
 -- ============================================================================
--- Step 8: Generate compliance knowledge base articles
+-- Step 7: Generate compliance knowledge base articles
 -- ============================================================================
 INSERT INTO COMPLIANCE_KNOWLEDGE_BASE VALUES
 ('KB001', 'TRID (TILA-RESPA Integrated Disclosure) Compliance Guide',
@@ -248,7 +218,7 @@ MORTGAGE INSURANCE:
 'GUIDELINES', 'FHA', CURRENT_TIMESTAMP(), 3104, 4.7, TRUE, CURRENT_TIMESTAMP());
 
 -- ============================================================================
--- Step 9: Create Cortex Search Service for Loan Review Notes
+-- Step 8: Create Cortex Search Service for Loan Review Notes
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE LOAN_REVIEW_NOTES_SEARCH
   ON note_text
@@ -271,7 +241,7 @@ AS
   FROM RAW.LOAN_REVIEW_NOTES;
 
 -- ============================================================================
--- Step 10: Create Cortex Search Service for Appraisal Reports
+-- Step 9: Create Cortex Search Service for Appraisal Reports
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE APPRAISAL_REPORTS_SEARCH
   ON report_text
@@ -292,7 +262,7 @@ AS
   FROM RAW.APPRAISAL_REPORTS;
 
 -- ============================================================================
--- Step 11: Create Cortex Search Service for Compliance Knowledge Base
+-- Step 10: Create Cortex Search Service for Compliance Knowledge Base
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE COMPLIANCE_KB_SEARCH
   ON content
@@ -314,7 +284,7 @@ AS
   FROM RAW.COMPLIANCE_KNOWLEDGE_BASE;
 
 -- ============================================================================
--- Step 12: Verify Cortex Search Services Created
+-- Step 11: Verify Cortex Search Services Created
 -- ============================================================================
 SHOW CORTEX SEARCH SERVICES IN SCHEMA RAW;
 
