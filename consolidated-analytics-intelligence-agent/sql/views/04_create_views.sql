@@ -309,7 +309,7 @@ SELECT 'Analytical views created successfully' AS status;
 -- Verify views exist
 SELECT 
     table_name AS view_name,
-    table_type
+    comment AS description
 FROM INFORMATION_SCHEMA.VIEWS
 WHERE TABLE_SCHEMA = 'ANALYTICS'
   AND table_name LIKE 'V_%'
