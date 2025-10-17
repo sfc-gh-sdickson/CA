@@ -1,4 +1,5 @@
-<img src="Snowflake_Logo.svg" width="200">
+<img src="consolidated-analytics-intelligence-agent/
+/Snowflake_Logo.svg" width="200">
 
 # Consolidated Analytics Intelligence Agent Solution
 
