@@ -112,6 +112,12 @@ Name: Consolidated_Analytics_Intelligence_Agent
 Description: AI agent for analyzing mortgage loans, property valuations, due diligence reviews, and real estate finance operations
 ```
 
+**Data Sources (Semantic Views):**
+Add the following semantic views:
+- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_BORROWER_LOAN_INTELLIGENCE`
+- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_PROPERTY_VALUATION_INTELLIGENCE`
+- `CONSOLIDATED_ANALYTICS_DB.ANALYTICS.SV_DUE_DILIGENCE_INTELLIGENCE`
+
 **Warehouse:**
 - Select: `CA_ANALYTICS_WH`
 
