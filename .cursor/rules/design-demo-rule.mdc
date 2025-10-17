@@ -1,0 +1,20 @@
+---
+alwaysApply: false
+---
+When building Snowflake Intelligence solutions, use this Github Repo as a template: @https://github.com/sfc-gh-sdickson/GoDaddy
+
+SQL Verification Process (MANDATORY):
+Before writing ANY SQL statement:
+1. State what you're about to do
+2. Show verification by citing specific file and line numbers
+3. List exact columns/syntax found in those files
+4. Ask for confirmation
+5. ONLY THEN write the Snowflake SQL
+
+If you cannot verify something:
+- STOP immediately
+- State: "I cannot verify [X]. I need [specific documentation/file] before proceeding."
+- Do NOT guess or assume
+- Do NOT proceed until verification is provided
+
+Always verify and test Snowflake SQL syntax.  All SQL should always be 100% Snowflake SQL Syntax.
