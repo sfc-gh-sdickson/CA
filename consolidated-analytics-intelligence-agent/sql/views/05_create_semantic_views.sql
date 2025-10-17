@@ -72,11 +72,11 @@ CREATE OR REPLACE SEMANTIC VIEW SV_LOAN_PORTFOLIO_INTELLIGENCE
     properties.property_type AS property_type
       WITH SYNONYMS ('real estate type', 'asset type', 'property class')
       COMMENT = 'Type: RESIDENTIAL_SINGLE_FAMILY, RESIDENTIAL_CONDO, MULTI_FAMILY, COMMERCIAL',
-    properties.state AS property_state
-      WITH SYNONYMS ('property location state', 'collateral state')
+    properties.state AS propstate
+      WITH SYNONYMS ('property state', 'property location state', 'collateral state')
       COMMENT = 'Property state location',
-    properties.city AS property_city
-      WITH SYNONYMS ('property location city', 'collateral city')
+    properties.city AS propcity
+      WITH SYNONYMS ('property city', 'property location city', 'collateral city')
       COMMENT = 'Property city location',
     properties.occupancy_status AS occupancy_status
       WITH SYNONYMS ('occupancy', 'tenant status', 'property occupancy')
@@ -186,11 +186,11 @@ CREATE OR REPLACE SEMANTIC VIEW SV_VALUATION_RISK_INTELLIGENCE
     properties.property_type AS property_type
       WITH SYNONYMS ('real estate type', 'asset class')
       COMMENT = 'Property type classification',
-    properties.state AS property_state
-      WITH SYNONYMS ('state', 'location')
+    properties.state AS propstate
+      WITH SYNONYMS ('property state', 'state', 'location')
       COMMENT = 'Property state location',
-    properties.city AS property_city
-      WITH SYNONYMS ('city', 'location city')
+    properties.city AS propcity
+      WITH SYNONYMS ('property city', 'city', 'location city')
       COMMENT = 'Property city location',
     properties.condition_rating AS property_condition
       WITH SYNONYMS ('condition', 'maintenance rating')
