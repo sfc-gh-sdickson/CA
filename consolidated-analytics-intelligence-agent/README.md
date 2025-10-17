@@ -126,15 +126,15 @@ Then follow `docs/AGENT_SETUP.md` for agent configuration.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│           Snowflake Intelligence Agent                   │
-│                                                          │
+│           Snowflake Intelligence Agent                  │
+│                                                         │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │       Semantic Views (Structured Data)             │ │
 │  │  • SV_BORROWER_LOAN_INTELLIGENCE                   │ │
 │  │  • SV_PROPERTY_VALUATION_INTELLIGENCE              │ │
 │  │  • SV_DUE_DILIGENCE_INTELLIGENCE                   │ │
 │  └────────────────────────────────────────────────────┘ │
-│                                                          │
+│                                                         │
 │  ┌────────────────────────────────────────────────────┐ │
 │  │       Cortex Search (Unstructured Data)            │ │
 │  │  • LOAN_REVIEW_NOTES_SEARCH                        │ │
