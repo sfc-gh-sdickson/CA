@@ -157,8 +157,8 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_VALUATION_INTELLIGENCE
     properties.property_city AS property_city
       WITH SYNONYMS ('city', 'property location city', 'collateral city')
       COMMENT = 'Property city location',
-    properties.condition_rating AS property_condition
-      WITH SYNONYMS ('condition', 'maintenance rating')
+    properties.condition_rating AS condition_rating
+      WITH SYNONYMS ('property condition', 'condition', 'maintenance rating')
       COMMENT = 'Property condition rating',
     properties.occupancy_status AS occupancy_status
       WITH SYNONYMS ('occupancy', 'tenant status')
