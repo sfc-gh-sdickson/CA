@@ -76,7 +76,7 @@ SELECT
     'NOTE' || LPAD(SEQ4(), 10, '0') AS note_id,
     r.review_id,
     r.loan_id,
-    CASE (ABS(RANDOM()) % 25)
+    CASE (ABS(RANDOM()) % 10)
         WHEN 0 THEN 'Pre-funding review completed for conventional loan. Borrower credit score of 745 meets guidelines. DTI ratio at 38% is acceptable. Property appraisal came in at contract price. All income documentation verified including W2s and paystubs. Employment verified with VOE. Title search shows no liens or encumbrances. Loan approved for funding with standard conditions.'
         WHEN 1 THEN 'Post-closing quality control review identified minor documentation deficiency. Missing signed copy of final HUD-1 settlement statement. Loan file otherwise complete. Contacted closing agent to obtain executed copy. Low severity finding, does not impact loan validity. File to be updated within 5 business days. No monetary impact.'
         WHEN 2 THEN 'Compliance audit found TRID timing violation. Initial Loan Estimate provided to borrower 8 days before closing, should have been 10 days minimum under CFPB regulations. Critical finding requiring corrective action. Management notified. Additional staff training on TRID requirements recommended. Potential regulatory exposure. Legal review requested.'
