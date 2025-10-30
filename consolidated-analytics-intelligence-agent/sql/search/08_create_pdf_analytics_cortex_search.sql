@@ -36,7 +36,7 @@ AS
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE IMAGE_ANALYSIS_SEARCH
   ON full_analysis_text
-  ATTRIBUTES file_name, image_name, model_name, for_sale_sign_detected, solar_panel_detected, human_presence_detected, potential_damage_detected, analysis_timestamp
+  ATTRIBUTES file_name, image_name, model_name, analysis_timestamp
   WAREHOUSE = CA_ANALYTICS_WH
   TARGET_LAG = '1 hour'
   COMMENT = 'Cortex Search service for image analysis - enables semantic search across property image analysis results, conditions, and AI-detected features'
@@ -67,7 +67,7 @@ AS
 -- ============================================================================
 CREATE OR REPLACE CORTEX SEARCH SERVICE PROPERTY_DAMAGE_SEARCH
   ON damage_description
-  ATTRIBUTES file_name, image_name, potential_damage_detected, potential_damage_confidence, analysis_timestamp
+  ATTRIBUTES file_name, image_name, potential_damage_confidence, analysis_timestamp
   WAREHOUSE = CA_ANALYTICS_WH
   TARGET_LAG = '2 hours'
   COMMENT = 'Cortex Search service for property damage - enables semantic search across damage descriptions, structural issues, and property condition concerns'
