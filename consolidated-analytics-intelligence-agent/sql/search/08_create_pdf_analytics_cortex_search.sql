@@ -9,8 +9,7 @@
 
 USE DATABASE PDF_ANALYTICS_DB;
 USE SCHEMA PDF_PROCESSING;
--- Note: You may need to create or use an appropriate warehouse
--- USE WAREHOUSE <YOUR_WAREHOUSE>;
+USE WAREHOUSE CA_ANALYTICS_WH;
 
 -- ============================================================================
 -- Step 1: Create Cortex Search Service for PDF Text Extraction
@@ -21,8 +20,7 @@ USE SCHEMA PDF_PROCESSING;
 CREATE OR REPLACE CORTEX SEARCH SERVICE PDF_TEXT_SEARCH
   ON EXTRACTED_TEXT
   ATTRIBUTES FILE_NAME, PAGE_NUMBER, UPLOAD_TIMESTAMP
-  -- Replace <YOUR_WAREHOUSE> with your actual warehouse name
-  WAREHOUSE = <YOUR_WAREHOUSE>
+  WAREHOUSE = CA_ANALYTICS_WH
   TARGET_LAG = '1 hour'
   COMMENT = 'Cortex Search service for PDF text extraction - enables semantic search across property document text, contracts, and descriptions'
 AS
@@ -45,8 +43,7 @@ AS
 CREATE OR REPLACE CORTEX SEARCH SERVICE IMAGE_ANALYSIS_SEARCH
   ON FULL_ANALYSIS_TEXT
   ATTRIBUTES FILE_NAME, IMAGE_NAME, MODEL_NAME, FOR_SALE_SIGN_DETECTED, SOLAR_PANEL_DETECTED, HUMAN_PRESENCE_DETECTED, POTENTIAL_DAMAGE_DETECTED, ANALYSIS_TIMESTAMP
-  -- Replace <YOUR_WAREHOUSE> with your actual warehouse name
-  WAREHOUSE = <YOUR_WAREHOUSE>
+  WAREHOUSE = CA_ANALYTICS_WH
   TARGET_LAG = '1 hour'
   COMMENT = 'Cortex Search service for image analysis - enables semantic search across property image analysis results, conditions, and AI-detected features'
 AS
@@ -80,8 +77,7 @@ AS
 CREATE OR REPLACE CORTEX SEARCH SERVICE PROPERTY_DAMAGE_SEARCH
   ON DAMAGE_DESCRIPTION
   ATTRIBUTES FILE_NAME, IMAGE_NAME, POTENTIAL_DAMAGE_DETECTED, POTENTIAL_DAMAGE_CONFIDENCE, ANALYSIS_TIMESTAMP
-  -- Replace <YOUR_WAREHOUSE> with your actual warehouse name
-  WAREHOUSE = <YOUR_WAREHOUSE>
+  WAREHOUSE = CA_ANALYTICS_WH
   TARGET_LAG = '2 hours'
   COMMENT = 'Cortex Search service for property damage - enables semantic search across damage descriptions, structural issues, and property condition concerns'
 AS
