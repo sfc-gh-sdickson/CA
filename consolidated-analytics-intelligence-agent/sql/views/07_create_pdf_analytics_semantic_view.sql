@@ -35,8 +35,8 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
     image_analysis(FILE_NAME) REFERENCES pdf_text(FILE_NAME)
   )
   DIMENSIONS (
-    pdf_text.FILE_NAME AS document_name
-      WITH SYNONYMS ('pdf name', 'document file', 'property document')
+    pdf_text.FILE_NAME AS file_name
+      WITH SYNONYMS ('pdf name', 'document file', 'property document', 'document name')
       COMMENT = 'Name of the PDF document file',
     pdf_text.PAGE_NUMBER AS page_number
       WITH SYNONYMS ('page', 'document page', 'pdf page')
@@ -44,23 +44,23 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
     image_analysis.IMAGE_NAME AS image_name
       WITH SYNONYMS ('photo name', 'image file', 'picture name')
       COMMENT = 'Name of the analyzed image',
-    image_analysis.MODEL_NAME AS ai_model
-      WITH SYNONYMS ('model', 'ai model used', 'analysis model')
+    image_analysis.MODEL_NAME AS model_name
+      WITH SYNONYMS ('model', 'ai model used', 'analysis model', 'ai model')
       COMMENT = 'Cortex AI model used for image analysis',
-    image_analysis.FOR_SALE_SIGN_DETECTED AS for_sale_sign
-      WITH SYNONYMS ('sale sign', 'for sale indicator', 'property listing sign')
+    image_analysis.FOR_SALE_SIGN_DETECTED AS for_sale_sign_detected
+      WITH SYNONYMS ('sale sign', 'for sale indicator', 'property listing sign', 'for sale sign')
       COMMENT = 'Whether a for-sale sign was detected (true/false)',
-    image_analysis.SOLAR_PANEL_DETECTED AS solar_panels
-      WITH SYNONYMS ('solar', 'solar installation', 'renewable energy')
+    image_analysis.SOLAR_PANEL_DETECTED AS solar_panel_detected
+      WITH SYNONYMS ('solar', 'solar installation', 'renewable energy', 'solar panels')
       COMMENT = 'Whether solar panels were detected (true/false)',
-    image_analysis.HUMAN_PRESENCE_DETECTED AS people_present
-      WITH SYNONYMS ('humans', 'people', 'occupants visible')
+    image_analysis.HUMAN_PRESENCE_DETECTED AS human_presence_detected
+      WITH SYNONYMS ('humans', 'people', 'occupants visible', 'people present')
       COMMENT = 'Whether human presence was detected (true/false)',
-    image_analysis.POTENTIAL_DAMAGE_DETECTED AS damage_detected
-      WITH SYNONYMS ('damage', 'property damage', 'structural issues')
+    image_analysis.POTENTIAL_DAMAGE_DETECTED AS potential_damage_detected
+      WITH SYNONYMS ('damage', 'property damage', 'structural issues', 'damage detected')
       COMMENT = 'Whether potential property damage was detected (true/false)',
-    image_analysis.DAMAGE_DESCRIPTION AS damage_details
-      WITH SYNONYMS ('damage description', 'damage notes', 'damage type')
+    image_analysis.DAMAGE_DESCRIPTION AS damage_description
+      WITH SYNONYMS ('damage details', 'damage notes', 'damage type', 'damage text')
       COMMENT = 'Description of detected damage or issues'
   )
   METRICS (
