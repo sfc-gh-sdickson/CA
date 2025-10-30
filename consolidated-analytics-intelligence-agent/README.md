@@ -24,6 +24,7 @@ This Snowflake Intelligence solution demonstrates how Consolidated Analytics can
 - **Risk Analytics**: Credit risk, concentration analysis, delinquency prediction
 - **Operational Efficiency**: Analyst productivity, process metrics, client satisfaction
 - **Unstructured Data Search**: Semantic search over review notes, appraisal reports, compliance KB
+- **PDF Analytics (NEW)**: Real estate property document analysis, AI image analysis, damage detection
 
 ## Database Schema
 
@@ -63,16 +64,50 @@ This Snowflake Intelligence solution demonstrates how Consolidated Analytics can
 - V_LOAN_PORTFOLIO, V_PROPERTY_VALUATIONS, V_DUE_DILIGENCE_METRICS
 - V_PORTFOLIO_RISK, V_TRANSACTION_ANALYTICS, V_ANALYST_PERFORMANCE, V_CLIENT_360
 
-### Cortex Search Services
+### Cortex Search Services (Core Analytics)
 
 - **LOAN_REVIEW_NOTES_SEARCH**: Search 50,000 due diligence review findings
 - **APPRAISAL_REPORTS_SEARCH**: Search 30,000 property appraisal narratives
 - **COMPLIANCE_KB_SEARCH**: Search regulatory compliance knowledge base
 
+---
+
+## PDF Analytics Module (NEW)
+
+### PDF_ANALYTICS_DB: Property Document Intelligence
+
+**Document Processing:**
+- **PDF_TEXT_DATA**: Extracted text from property PDF documents (page-by-page)
+- **IMAGE_ANALYSIS_RESULTS**: AI-powered image analysis with Cortex (solar, damage, for-sale signs)
+- **APP_CONFIG**: Application configuration settings
+
+**Storage:**
+- **PDF_FILES_STAGE**: Internal stage for uploaded PDF files
+- **PDF_IMAGES_STAGE**: Internal stage for extracted property images
+
+### Semantic View: Property Intelligence
+
+**Semantic View for AI Agents:**
+4. **SV_PROPERTY_PDF_INTELLIGENCE**: PDF text extraction and image analysis
+
+**AI Detection Capabilities:**
+- For-sale sign detection with confidence scores
+- Solar panel identification
+- Human presence detection
+- Property damage assessment
+- Damage descriptions and severity
+
+### Cortex Search Services (PDF Analytics)
+
+- **PDF_TEXT_SEARCH**: Semantic search over property document text
+- **IMAGE_ANALYSIS_SEARCH**: Search AI image analysis results and detections
+- **PROPERTY_DAMAGE_SEARCH**: Specialized search for damage and inspection findings
+
 ## Files
 
 ### SQL Scripts (Execute in Order)
 
+**Core Analytics Setup:**
 1. `sql/setup/01_database_and_schema.sql` - Database and schema creation
 2. `sql/setup/02_create_tables.sql` - Table definitions with constraints
 3. `sql/data/03_generate_synthetic_data.sql` - Realistic sample data generation
@@ -80,16 +115,28 @@ This Snowflake Intelligence solution demonstrates how Consolidated Analytics can
 5. `sql/views/05_create_semantic_views.sql` - Semantic views for AI agents
 6. `sql/search/06_create_cortex_search.sql` - Unstructured data and Cortex Search
 
+**PDF Analytics Setup (NEW):**
+7. `sql/setup/setup.sql` - PDF Analytics database, tables, and stages
+8. `sql/views/07_create_pdf_analytics_semantic_view.sql` - Property PDF semantic view
+9. `sql/search/08_create_pdf_analytics_cortex_search.sql` - PDF text and image search services
+
 ### Documentation
 
+**Core Setup:**
 - `docs/AGENT_SETUP.md` - Step-by-step agent configuration guide
 - `docs/questions.md` - 15 complex questions the agent can answer
+- `SQL_EXECUTION_ORDER.md` - Complete SQL execution sequence
 - `README.md` - This file
+
+**PDF Analytics (NEW):**
+- `docs/PDF_ANALYTICS_INTEGRATION.md` - Complete PDF Analytics integration guide
+- `docs/PDF_ANALYTICS_QUICK_START.md` - 5-minute quick start guide
 
 ## Setup Instructions
 
 ### Quick Start
 
+**Core Analytics:**
 ```sql
 -- Execute in order:
 @sql/setup/01_database_and_schema.sql
@@ -100,7 +147,17 @@ This Snowflake Intelligence solution demonstrates how Consolidated Analytics can
 @sql/search/06_create_cortex_search.sql
 ```
 
-Then follow `docs/AGENT_SETUP.md` for agent configuration.
+**PDF Analytics (NEW - EDIT WAREHOUSE FIRST):**
+```sql
+-- Execute in order (after editing warehouse references):
+@sql/setup/setup.sql
+@sql/views/07_create_pdf_analytics_semantic_view.sql
+@sql/search/08_create_pdf_analytics_cortex_search.sql
+```
+
+**Agent Configuration:**
+- Core: Follow `docs/AGENT_SETUP.md`
+- PDF Analytics: Follow `docs/PDF_ANALYTICS_QUICK_START.md` or `docs/PDF_ANALYTICS_INTEGRATION.md`
 
 ## Key Features
 
@@ -109,6 +166,8 @@ Then follow `docs/AGENT_SETUP.md` for agent configuration.
 ✅ **Hybrid Data**: Structured tables + unstructured text search  
 ✅ **Production-Ready**: 75K loans, 1M transactions, 50K review notes  
 ✅ **RAG-Enabled**: Agent retrieves context from unstructured data  
+✅ **PDF Analytics**: AI-powered property document and image analysis (NEW)  
+✅ **Multi-Database**: Core analytics + property intelligence in separate databases  
 
 ## Data Volumes
 
@@ -125,23 +184,31 @@ Then follow `docs/AGENT_SETUP.md` for agent configuration.
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│           Snowflake Intelligence Agent                  │
-│                                                         │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │       Semantic Views (Structured Data)             │ │
-│  │  • SV_BORROWER_LOAN_INTELLIGENCE                   │ │
-│  │  • SV_PROPERTY_VALUATION_INTELLIGENCE              │ │
-│  │  • SV_DUE_DILIGENCE_INTELLIGENCE                   │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                         │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │       Cortex Search (Unstructured Data)            │ │
-│  │  • LOAN_REVIEW_NOTES_SEARCH                        │ │
-│  │  • APPRAISAL_REPORTS_SEARCH                        │ │
-│  │  • COMPLIANCE_KB_SEARCH                            │ │
-│  └────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│              Snowflake Intelligence Agent                        │
+│         (Core Analytics + PDF Analytics)                         │
+└────────────────────────┬─────────────────────────────────────────┘
+                         │
+           ┌─────────────┴──────────────┐
+           │                            │
+           ▼                            ▼
+┌────────────────────┐       ┌────────────────────────┐
+│  Cortex Analyst    │       │   Cortex Search        │
+│  (Semantic Views)  │       │   (Text Search)        │
+└──────────┬─────────┘       └──────────┬─────────────┘
+           │                            │
+    ┌──────┴─────────┐        ┌─────────┴──────────────────┐
+    │                │        │         │                   │
+    ▼                ▼        ▼         ▼                   ▼
+┌────────┐  ┌─────────────┐ ┌────┐ ┌────────┐  ┌──────────────┐
+│Borrower│  │Property Val │ │Loan│ │Appraisal│  │PDF Analytics │
+│& Loan  │  │Intelligence │ │Rev │ │Reports  │  │Search        │
+│SV      │  │SV           │ │Notes│ │Search   │  │(3 services)  │
+└────────┘  └─────────────┘ └────┘ └─────────┘  └──────────────┘
+                │              │         │             │
+                ▼              ▼         ▼             ▼
+    CONSOLIDATED_ANALYTICS_DB          PDF_ANALYTICS_DB
+      (RAW + ANALYTICS schemas)        (PDF_PROCESSING)
 ```
 
 ---
