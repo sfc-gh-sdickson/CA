@@ -64,43 +64,43 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
       COMMENT = 'Description of detected damage or issues'
   )
   METRICS (
-    pdf_text.total_documents AS COUNT(DISTINCT FILE_NAME)
+    pdf_text.total_documents AS COUNT(DISTINCT file_name)
       WITH SYNONYMS ('document count', 'pdf count', 'number of pdfs')
       COMMENT = 'Total number of unique PDF documents processed',
-    pdf_text.total_pages AS COUNT(DISTINCT ID)
+    pdf_text.total_pages AS COUNT(DISTINCT id)
       WITH SYNONYMS ('page count', 'total pages extracted')
       COMMENT = 'Total number of pages extracted from PDFs',
-    pdf_text.avg_pages_per_document AS AVG(PAGE_NUMBER)
+    pdf_text.avg_pages_per_document AS AVG(page_number)
       WITH SYNONYMS ('average pages', 'mean pages per pdf')
       COMMENT = 'Average number of pages per document',
-    image_analysis.total_images AS COUNT(DISTINCT ID)
+    image_analysis.total_images AS COUNT(DISTINCT id)
       WITH SYNONYMS ('image count', 'photo count', 'total images analyzed')
       COMMENT = 'Total number of images analyzed',
-    image_analysis.for_sale_sign_count AS SUM(CASE WHEN FOR_SALE_SIGN_DETECTED THEN 1 ELSE 0 END)
+    image_analysis.for_sale_sign_count AS SUM(CASE WHEN for_sale_sign_detected THEN 1 ELSE 0 END)
       WITH SYNONYMS ('for sale signs', 'listing signs detected', 'sale indicators')
       COMMENT = 'Number of images with for-sale signs detected',
-    image_analysis.avg_for_sale_confidence AS AVG(FOR_SALE_SIGN_CONFIDENCE)
+    image_analysis.avg_for_sale_confidence AS AVG(for_sale_sign_confidence)
       WITH SYNONYMS ('sale sign confidence', 'for sale detection confidence')
       COMMENT = 'Average confidence score for for-sale sign detection',
-    image_analysis.solar_panel_count AS SUM(CASE WHEN SOLAR_PANEL_DETECTED THEN 1 ELSE 0 END)
+    image_analysis.solar_panel_count AS SUM(CASE WHEN solar_panel_detected THEN 1 ELSE 0 END)
       WITH SYNONYMS ('solar installations', 'properties with solar', 'solar detections')
       COMMENT = 'Number of images with solar panels detected',
-    image_analysis.avg_solar_confidence AS AVG(SOLAR_PANEL_CONFIDENCE)
+    image_analysis.avg_solar_confidence AS AVG(solar_panel_confidence)
       WITH SYNONYMS ('solar detection confidence', 'solar panel confidence')
       COMMENT = 'Average confidence score for solar panel detection',
-    image_analysis.human_presence_count AS SUM(CASE WHEN HUMAN_PRESENCE_DETECTED THEN 1 ELSE 0 END)
+    image_analysis.human_presence_count AS SUM(CASE WHEN human_presence_detected THEN 1 ELSE 0 END)
       WITH SYNONYMS ('images with people', 'human detections', 'occupied photos')
       COMMENT = 'Number of images with human presence detected',
-    image_analysis.avg_human_confidence AS AVG(HUMAN_PRESENCE_CONFIDENCE)
+    image_analysis.avg_human_confidence AS AVG(human_presence_confidence)
       WITH SYNONYMS ('human detection confidence', 'people detection confidence')
       COMMENT = 'Average confidence score for human presence detection',
-    image_analysis.damage_count AS SUM(CASE WHEN POTENTIAL_DAMAGE_DETECTED THEN 1 ELSE 0 END)
+    image_analysis.damage_count AS SUM(CASE WHEN potential_damage_detected THEN 1 ELSE 0 END)
       WITH SYNONYMS ('damaged properties', 'properties with damage', 'damage detections')
       COMMENT = 'Number of images with potential damage detected',
-    image_analysis.avg_damage_confidence AS AVG(POTENTIAL_DAMAGE_CONFIDENCE)
+    image_analysis.avg_damage_confidence AS AVG(potential_damage_confidence)
       WITH SYNONYMS ('damage detection confidence', 'damage confidence score')
       COMMENT = 'Average confidence score for damage detection',
-    image_analysis.images_per_document AS COUNT(DISTINCT IMAGE_NAME) / COUNT(DISTINCT FILE_NAME)
+    image_analysis.images_per_document AS COUNT(DISTINCT image_name) / COUNT(DISTINCT file_name)
       WITH SYNONYMS ('photos per property', 'images per pdf', 'average images')
       COMMENT = 'Average number of images analyzed per document'
   )
