@@ -31,9 +31,6 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
       WITH SYNONYMS ('property images', 'image inspection', 'visual analysis')
       COMMENT = 'AI-powered image analysis results for property photos'
   )
-  RELATIONSHIPS (
-    image_analysis(file_name) REFERENCES pdf_text(file_name)
-  )
   DIMENSIONS (
     pdf_text.file_name AS file_name
       WITH SYNONYMS ('pdf name', 'document file', 'property document', 'document name')
