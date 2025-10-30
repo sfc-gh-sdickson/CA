@@ -1,15 +1,8 @@
 -- ============================================================================
 -- PDF Analytics Intelligence Agent - Semantic View
 -- ============================================================================
--- Purpose: Create semantic view for real estate property PDF text extraction
---          and image analysis intelligence
--- Syntax VERIFIED against existing template (05_create_semantic_views.sql)
--- 
--- Syntax Verification:
--- 1. Clause order is MANDATORY: TABLES → RELATIONSHIPS → DIMENSIONS → METRICS → COMMENT
--- 2. Semantic expression format: semantic_name AS sql_expression
--- 3. PRIMARY KEY columns must exist in table definitions
--- 4. Source tables verified from sql/setup/setup.sql (lines 24-53)
+-- Purpose: Create semantic view for real estate property image analysis
+-- Syntax VERIFIED against GoDaddy template (05_create_semantic_views.sql lines 23-336)
 -- ============================================================================
 
 USE DATABASE PDF_ANALYTICS_DB;
@@ -18,32 +11,28 @@ USE SCHEMA PDF_PROCESSING;
 -- USE WAREHOUSE <YOUR_WAREHOUSE>;
 
 -- ============================================================================
--- Semantic View: Real Estate Property Intelligence
+-- Semantic View: Property Image Analysis Intelligence
 -- ============================================================================
-CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
+CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_IMAGE_INTELLIGENCE
   TABLES (
-    pdf_text AS PDF_TEXT_DATA
-      PRIMARY KEY (id)
-      WITH SYNONYMS ('pdf documents', 'document text', 'extracted documents')
-      COMMENT = 'Extracted text from real estate property PDF documents',
     image_analysis AS IMAGE_ANALYSIS_RESULTS
       PRIMARY KEY (id)
-      WITH SYNONYMS ('property images', 'image inspection', 'visual analysis')
+      WITH SYNONYMS ('property images', 'image inspection', 'visual analysis', 'ai analysis')
       COMMENT = 'AI-powered image analysis results for property photos'
   )
   DIMENSIONS (
-    pdf_text.file_name AS file_name
-      WITH SYNONYMS ('pdf name', 'document file', 'property document', 'document name')
+    image_analysis.file_name AS file_name
+      WITH SYNONYMS ('document name', 'pdf name', 'property document')
       COMMENT = 'Name of the PDF document file',
-    pdf_text.page_number AS page_number
-      WITH SYNONYMS ('page', 'document page', 'pdf page')
-      COMMENT = 'Page number within the PDF document',
     image_analysis.image_name AS image_name
       WITH SYNONYMS ('photo name', 'image file', 'picture name')
       COMMENT = 'Name of the analyzed image',
     image_analysis.model_name AS model_name
       WITH SYNONYMS ('model', 'ai model used', 'analysis model', 'ai model')
       COMMENT = 'Cortex AI model used for image analysis',
+    image_analysis.page_number AS page_number
+      WITH SYNONYMS ('page', 'document page', 'pdf page')
+      COMMENT = 'Page number within the PDF document',
     image_analysis.for_sale_sign_detected AS for_sale_sign_detected
       WITH SYNONYMS ('sale sign', 'for sale indicator', 'property listing sign', 'for sale sign')
       COMMENT = 'Whether a for-sale sign was detected (true/false)',
@@ -61,18 +50,12 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
       COMMENT = 'Description of detected damage or issues'
   )
   METRICS (
-    pdf_text.total_documents AS COUNT(DISTINCT file_name)
-      WITH SYNONYMS ('document count', 'pdf count', 'number of pdfs')
-      COMMENT = 'Total number of unique PDF documents processed',
-    pdf_text.total_pages AS COUNT(DISTINCT id)
-      WITH SYNONYMS ('page count', 'total pages extracted')
-      COMMENT = 'Total number of pages extracted from PDFs',
-    pdf_text.avg_pages_per_document AS AVG(page_number)
-      WITH SYNONYMS ('average pages', 'mean pages per pdf')
-      COMMENT = 'Average number of pages per document',
     image_analysis.total_images AS COUNT(DISTINCT id)
       WITH SYNONYMS ('image count', 'photo count', 'total images analyzed')
       COMMENT = 'Total number of images analyzed',
+    image_analysis.total_documents AS COUNT(DISTINCT file_name)
+      WITH SYNONYMS ('document count', 'pdf count', 'number of pdfs')
+      COMMENT = 'Total number of unique PDF documents',
     image_analysis.for_sale_sign_count AS SUM(CASE WHEN for_sale_sign_detected THEN 1 ELSE 0 END)
       WITH SYNONYMS ('for sale signs', 'listing signs detected', 'sale indicators')
       COMMENT = 'Number of images with for-sale signs detected',
@@ -96,17 +79,14 @@ CREATE OR REPLACE SEMANTIC VIEW SV_PROPERTY_PDF_INTELLIGENCE
       COMMENT = 'Number of images with potential damage detected',
     image_analysis.avg_damage_confidence AS AVG(potential_damage_confidence)
       WITH SYNONYMS ('damage detection confidence', 'damage confidence score')
-      COMMENT = 'Average confidence score for damage detection',
-    image_analysis.images_per_document AS COUNT(DISTINCT image_name) / COUNT(DISTINCT file_name)
-      WITH SYNONYMS ('photos per property', 'images per pdf', 'average images')
-      COMMENT = 'Average number of images analyzed per document'
+      COMMENT = 'Average confidence score for damage detection'
   )
-  COMMENT = 'Real Estate Property Intelligence - PDF text extraction and AI-powered image analysis for property assessment and valuation';
+  COMMENT = 'Property Image Intelligence - AI-powered image analysis for real estate property assessment';
 
 -- ============================================================================
 -- Display confirmation and verification
 -- ============================================================================
-SELECT 'PDF Analytics semantic view created successfully - all syntax verified' AS status;
+SELECT 'PDF Analytics semantic view created successfully - syntax verified' AS status;
 
 -- Verify semantic view exists
 SELECT 
@@ -114,9 +94,8 @@ SELECT
     comment AS description
 FROM INFORMATION_SCHEMA.VIEWS
 WHERE TABLE_SCHEMA = 'PDF_PROCESSING'
-  AND table_name = 'SV_PROPERTY_PDF_INTELLIGENCE'
+  AND table_name = 'SV_PROPERTY_IMAGE_INTELLIGENCE'
 ORDER BY table_name;
 
 -- Show semantic view details
 SHOW SEMANTIC VIEWS IN SCHEMA PDF_PROCESSING;
-
